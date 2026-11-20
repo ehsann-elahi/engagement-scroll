@@ -78,7 +78,7 @@ export const CinematicScrollJourney: React.FC<CinematicScrollJourneyProps> = ({ 
   const [copiedAddress, setCopiedAddress] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
 
-  // Real-time Countdown calculation for 2026-11-25T20:00:00+05:00
+  // Real-time Countdown calculation for 2026-12-25T20:00:00+05:00
   const calculateTimeLeft = () => {
     const targetDate = new Date(eventConfig.targetDateTime).getTime();
     const now = new Date().getTime();
@@ -138,7 +138,7 @@ export const CinematicScrollJourney: React.FC<CinematicScrollJourneyProps> = ({ 
 
   const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(
     `Engagement Ceremony: ${eventConfig.groom} & ${eventConfig.bride}`
-  )}&dates=20261125T150000Z/20261125T180000Z&details=${encodeURIComponent(
+  )}&dates=20261225T150000Z/20261225T180000Z&details=${encodeURIComponent(
     shareText
   )}&location=${encodeURIComponent(eventConfig.venueFullAddress)}`;
 
@@ -157,7 +157,7 @@ export const CinematicScrollJourney: React.FC<CinematicScrollJourneyProps> = ({ 
             F & A
           </span>
           <span className="text-[10px] uppercase tracking-widest text-[#2C4D75] hidden sm:inline font-semibold">
-            · 25 November 2026
+            · 25 December 2026
           </span>
         </div>
       </div>
@@ -379,7 +379,7 @@ export const CinematicScrollJourney: React.FC<CinematicScrollJourneyProps> = ({ 
       </section>
 
       {/* ========================================================= */}
-      {/* SCENE 04 — THE DATE REVEAL (25 November 2026) */}
+      {/* SCENE 04 — THE DATE REVEAL (25 December 2026) */}
       {/* ========================================================= */}
       <section
         id="date"

@@ -17,10 +17,10 @@ export const ClosingSection: React.FC<ClosingProps> = ({ onReplay }) => {
     `${shareText}\n\nView the invitation: ${window.location.origin}`
   )}`;
 
-  // Google Calendar pre-filled URL: 2026-11-25 20:00 to 23:00 PKT (15:00 UTC to 18:00 UTC)
+  // Google Calendar pre-filled URL: 2026-12-25 20:00 to 23:00 PKT (15:00 UTC to 18:00 UTC)
   const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(
     `Engagement Ceremony: ${eventConfig.groom} & ${eventConfig.bride}`
-  )}&dates=20261125T150000Z/20261125T180000Z&details=${encodeURIComponent(
+  )}&dates=20261225T150000Z/20261225T180000Z&details=${encodeURIComponent(
     shareText
   )}&location=${encodeURIComponent(eventConfig.venueFullAddress)}`;
 
