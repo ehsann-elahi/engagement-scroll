@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "skills": {
+    "impeccable": {
+      "source": "pbakaus/impeccable",
+      "commit": "b49177d32788f2dc585c42831d845dacf1ebed2c",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/impeccable/SKILL.md",
+      "computedHash": "08bd5bf141cb507f46bd8347890cd985865606f15adf88295ed3a73bc9ad5d96"
+    },
+    "lets-scroll": {
+      "source": "AIwithhassan/lets-scroll",
+      "commit": "a0605366e8e774b1596a993ecaf564b6de5916cc",
+      "sourceType": "github",
+      "skillPath": "skills/lets-scroll/SKILL.md",
+      "computedHash": "4ec5f80dabd80a784f09e9fda7e7c750ede7fcbd599e55e518c406501a3246c6"
+    }
+  }
+}
