@@ -695,9 +695,9 @@ export const CinematicScrollJourney: React.FC<CinematicScrollJourneyProps> = ({
         <div className="perspective-1200 relative w-full grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] items-center gap-8 md:gap-10 mt-6">
           {/* GROOM CATHEDRAL ARCH */}
           <div className="arch-groom preserve-3d azure-arch sheen-plate rounded-t-[170px] rounded-b-[28px] px-8 pt-14 pb-11 text-center">
-            <div className="w-28 h-28 mx-auto rounded-full bg-white text-[#1558C0] shadow-[0_14px_34px_rgba(9,41,112,0.3)] flex flex-col items-center justify-center border-4 border-white/40 mb-7">
+            <div className="w-28 h-28 mx-auto rounded-full bg-white text-[#0B1D42] shadow-[0_14px_34px_rgba(9,41,112,0.3)] flex flex-col items-center justify-center border-4 border-white/40 mb-7">
               <span className="font-serif italic text-3xl font-bold leading-none">FA</span>
-              <span className="text-[8px] uppercase tracking-[0.22em] font-bold mt-1 text-[#1E78F2]">
+              <span className="text-[8px] uppercase tracking-[0.22em] font-bold mt-1 text-[#163A7A]">
                 Groom
               </span>
             </div>
@@ -733,16 +733,16 @@ export const CinematicScrollJourney: React.FC<CinematicScrollJourneyProps> = ({
                 strokeLinecap="round"
               />
             </svg>
-            <div className="absolute top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white text-[#1558C0] shadow-[0_0_28px_rgba(255,255,255,0.75)] flex items-center justify-center">
+            <div className="absolute top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white text-[#0B1D42] shadow-[0_0_28px_rgba(255,255,255,0.75)] flex items-center justify-center">
               <Heart className="w-5 h-5 fill-current" />
             </div>
           </div>
 
           {/* BRIDE CATHEDRAL ARCH */}
           <div className="arch-bride preserve-3d azure-arch sheen-plate rounded-t-[170px] rounded-b-[28px] px-8 pt-14 pb-11 text-center md:mt-16">
-            <div className="w-28 h-28 mx-auto rounded-full bg-white text-[#1558C0] shadow-[0_14px_34px_rgba(9,41,112,0.3)] flex flex-col items-center justify-center border-4 border-white/40 mb-7">
+            <div className="w-28 h-28 mx-auto rounded-full bg-white text-[#0B1D42] shadow-[0_14px_34px_rgba(9,41,112,0.3)] flex flex-col items-center justify-center border-4 border-white/40 mb-7">
               <span className="font-serif italic text-3xl font-bold leading-none">AS</span>
-              <span className="text-[8px] uppercase tracking-[0.22em] font-bold mt-1 text-[#1E78F2]">
+              <span className="text-[8px] uppercase tracking-[0.22em] font-bold mt-1 text-[#163A7A]">
                 Bride
               </span>
             </div>
@@ -856,9 +856,9 @@ export const CinematicScrollJourney: React.FC<CinematicScrollJourneyProps> = ({
 
               {/* Right Schedule & Embossed White Seal */}
               <div className="flex flex-col items-center md:items-start text-center md:text-left space-y-4">
-                <div className="w-16 h-16 rounded-full bg-white text-[#1558C0] shadow-[0_10px_28px_rgba(9,41,112,0.3)] flex flex-col items-center justify-center border-2 border-[#DBEAFE]">
+                <div className="w-16 h-16 rounded-full bg-white text-[#0B1D42] shadow-[0_10px_28px_rgba(9,41,112,0.3)] flex flex-col items-center justify-center border-2 border-[#DBEAFE]">
                   <span className="font-serif italic font-bold text-base leading-none">FA</span>
-                  <span className="text-[7px] uppercase tracking-widest font-bold mt-0.5 text-[#1E78F2]">
+                  <span className="text-[7px] uppercase tracking-widest font-bold mt-0.5 text-[#163A7A]">
                     2026
                   </span>
                 </div>
@@ -954,7 +954,7 @@ export const CinematicScrollJourney: React.FC<CinematicScrollJourneyProps> = ({
           {/* Clean Venue Showcase Ribbon — ZERO GPS Coordinates */}
           <div className="bg-white/15 backdrop-blur-xl border border-white/35 rounded-3xl p-6 sm:p-8 max-w-2xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6 text-center sm:text-left">
             <div className="flex flex-col sm:flex-row items-center gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-white text-[#1558C0] flex items-center justify-center shrink-0 shadow-md">
+              <div className="w-12 h-12 rounded-2xl bg-white text-[#0B1D42] flex items-center justify-center shrink-0 shadow-md">
                 <MapPin className="w-6 h-6" />
               </div>
               <div className="space-y-1">
@@ -979,7 +979,7 @@ export const CinematicScrollJourney: React.FC<CinematicScrollJourneyProps> = ({
                 href={eventConfig.googleMapsDirectionsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white text-[#1558C0] hover:bg-[#EFF6FF] text-[11px] uppercase tracking-[0.2em] font-bold shadow-[0_8px_22px_rgba(9,41,112,0.28)] transition-all"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white text-[#0B1D42] hover:bg-[#EFF6FF] text-[11px] uppercase tracking-[0.2em] font-bold shadow-[0_8px_22px_rgba(9,41,112,0.28)] transition-all"
               >
                 <Navigation className="w-3.5 h-3.5 fill-current" />
                 <span>Directions</span>
@@ -991,7 +991,7 @@ export const CinematicScrollJourney: React.FC<CinematicScrollJourneyProps> = ({
           <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
             <button
               onClick={onReplay}
-              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-white text-[#1558C0] hover:bg-[#EFF6FF] text-xs uppercase tracking-[0.22em] font-bold shadow-[0_12px_28px_rgba(9,41,112,0.3)] transition-all hover:-translate-y-0.5 cursor-pointer"
+              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-white text-[#0B1D42] hover:bg-[#EFF6FF] text-xs uppercase tracking-[0.22em] font-bold shadow-[0_12px_28px_rgba(9,41,112,0.3)] transition-all hover:-translate-y-0.5 cursor-pointer"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               <span>Replay Invitation</span>

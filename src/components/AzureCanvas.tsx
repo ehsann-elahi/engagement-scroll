@@ -98,22 +98,22 @@ export const AzureCanvas: React.FC = () => {
 
       ctx.clearRect(0, 0, width, height);
 
-      // Luminous sunlit azure aura blooms (bright blue atmosphere)
+      // Deep royal blue celestial atmospheric aura bloom
       const topGlow = ctx.createRadialGradient(
         width * 0.5,
-        height * 0.12,
+        height * 0.14,
         10,
         width * 0.5,
-        height * 0.12,
-        width * 0.65
+        height * 0.14,
+        width * 0.62
       );
-      topGlow.addColorStop(0, 'rgba(147, 197, 253, 0.34)');
-      topGlow.addColorStop(0.5, 'rgba(59, 130, 246, 0.12)');
-      topGlow.addColorStop(1, 'rgba(21, 88, 192, 0)');
+      topGlow.addColorStop(0, 'rgba(37, 99, 235, 0.24)');
+      topGlow.addColorStop(0.5, 'rgba(29, 78, 216, 0.10)');
+      topGlow.addColorStop(1, 'rgba(11, 29, 66, 0)');
       ctx.fillStyle = topGlow;
       ctx.fillRect(0, 0, width, height);
 
-      // Subtle interactive white spotlight following pointer
+      // Subtle interactive white starlight spotlight following pointer
       if (!prefersReduced) {
         const cursorGlow = ctx.createRadialGradient(
           pointerX,
@@ -121,10 +121,10 @@ export const AzureCanvas: React.FC = () => {
           0,
           pointerX,
           pointerY,
-          Math.min(width, height) * 0.36
+          Math.min(width, height) * 0.34
         );
-        cursorGlow.addColorStop(0, 'rgba(255, 255, 255, 0.11)');
-        cursorGlow.addColorStop(1, 'rgba(255, 255, 255, 0)');
+        cursorGlow.addColorStop(0, 'rgba(191, 219, 254, 0.09)');
+        cursorGlow.addColorStop(1, 'rgba(11, 29, 66, 0)');
         ctx.fillStyle = cursorGlow;
         ctx.fillRect(0, 0, width, height);
       }

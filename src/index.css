@@ -4,26 +4,25 @@
 
 @layer base {
   :root {
-    --blue-bright: #1E78F2;
-    --blue-royal: #1558C0;
-    --blue-cobalt: #1147A8;
-    --blue-azure: #2B8AF7;
-    --blue-sky: #60A5FA;
+    --blue-dark: #0B1D42;
+    --blue-royal-deep: #102857;
+    --blue-prussian: #15346E;
+    --blue-midnight-royal: #071430;
     --white-pure: #FFFFFF;
-    --white-pearl: #F0F7FF;
-    --white-ice: #DBEAFE;
-    --glass-bg: rgba(255, 255, 255, 0.14);
-    --glass-border: rgba(255, 255, 255, 0.34);
+    --white-pearl: #F8FAFC;
+    --white-ice: #E2E8F0;
+    --glass-bg: rgba(255, 255, 255, 0.08);
+    --glass-border: rgba(255, 255, 255, 0.24);
   }
 
   html {
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
-    background-color: #1558C0;
+    background-color: #0B1D42;
     color: #FFFFFF;
   }
 
   body {
-    background: linear-gradient(160deg, #1E7AF5 0%, #155CC8 35%, #1A6CE0 70%, #0F4CB0 100%);
+    background: linear-gradient(160deg, #132F66 0%, #0C214A 38%, #0E2656 72%, #071430 100%);
     background-attachment: fixed;
     color: #FFFFFF;
     font-family: 'Manrope', system-ui, sans-serif;
@@ -31,15 +30,15 @@
     overflow-x: hidden;
   }
 
-  /* Custom refined bright blue & white scrollbar */
+  /* Custom refined dark royal blue & white scrollbar */
   ::-webkit-scrollbar {
     width: 7px;
   }
   ::-webkit-scrollbar-track {
-    background: #124EB0;
+    background: #071430;
   }
   ::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.65);
+    background: rgba(255, 255, 255, 0.55);
     border-radius: 9999px;
   }
   ::-webkit-scrollbar-thumb:hover {
@@ -48,19 +47,19 @@
 }
 
 /* ========================================================= */
-/* LUMINOUS FROSTED CRYSTAL GLASS SURFACES (BRIGHT BLUE MODE) */
+/* LUXURY FROSTED CRYSTAL GLASS SURFACES (DARK ROYAL BLUE) */
 /* ========================================================= */
 .azure-glass {
   background: linear-gradient(
     145deg,
-    rgba(255, 255, 255, 0.22) 0%,
-    rgba(255, 255, 255, 0.10) 55%,
-    rgba(255, 255, 255, 0.16) 100%
+    rgba(255, 255, 255, 0.12) 0%,
+    rgba(255, 255, 255, 0.05) 55%,
+    rgba(255, 255, 255, 0.09) 100%
   );
-  border: 1px solid rgba(255, 255, 255, 0.38);
+  border: 1px solid rgba(255, 255, 255, 0.24);
   box-shadow:
-    0 24px 60px -15px rgba(8, 36, 98, 0.32),
-    inset 0 1px 1px rgba(255, 255, 255, 0.45);
+    0 28px 65px -15px rgba(3, 10, 28, 0.62),
+    inset 0 1px 1px rgba(255, 255, 255, 0.28);
   backdrop-filter: blur(22px);
   -webkit-backdrop-filter: blur(22px);
 }
@@ -68,13 +67,13 @@
 .azure-glass-strong {
   background: linear-gradient(
     155deg,
-    rgba(255, 255, 255, 0.26) 0%,
-    rgba(255, 255, 255, 0.13) 100%
+    rgba(255, 255, 255, 0.14) 0%,
+    rgba(16, 40, 87, 0.55) 100%
   );
-  border: 1px solid rgba(255, 255, 255, 0.48);
+  border: 1px solid rgba(255, 255, 255, 0.30);
   box-shadow:
-    0 32px 72px -18px rgba(7, 32, 88, 0.38),
-    inset 0 1.5px 1px rgba(255, 255, 255, 0.55);
+    0 34px 80px -18px rgba(3, 10, 28, 0.72),
+    inset 0 1px 1px rgba(255, 255, 255, 0.32);
   backdrop-filter: blur(26px);
   -webkit-backdrop-filter: blur(26px);
 }
@@ -82,13 +81,13 @@
 .azure-arch {
   background: linear-gradient(
     180deg,
-    rgba(255, 255, 255, 0.24) 0%,
-    rgba(255, 255, 255, 0.08) 100%
+    rgba(255, 255, 255, 0.13) 0%,
+    rgba(11, 29, 66, 0.45) 100%
   );
-  border: 1px solid rgba(255, 255, 255, 0.42);
+  border: 1px solid rgba(255, 255, 255, 0.26);
   box-shadow:
-    0 28px 64px -16px rgba(9, 41, 112, 0.34),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    0 30px 70px -16px rgba(3, 10, 28, 0.68),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
 }

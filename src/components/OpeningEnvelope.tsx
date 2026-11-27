@@ -44,21 +44,21 @@ export const OpeningEnvelope: React.FC<OpeningEnvelopeProps> = ({ isOpen, onOpen
     <motion.div
       initial={{ opacity: 1 }}
       exit={{ opacity: 0, scale: 1.05, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } }}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto bg-[#1558C0]"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto bg-[#0B1D42]"
       style={{
         background:
-          'radial-gradient(circle at 50% 22%, #3B92FF 0%, #1D72EA 48%, #114BB5 100%)',
+          'radial-gradient(circle at 50% 22%, #173A7D 0%, #0C214A 52%, #071430 100%)',
       }}
     >
       {/* Subtle architectural corner framing lines in crisp white */}
-      <div className="absolute top-6 left-6 w-12 h-12 border-t border-l border-white/40 pointer-events-none" />
-      <div className="absolute top-6 right-6 w-12 h-12 border-t border-r border-white/40 pointer-events-none" />
-      <div className="absolute bottom-6 left-6 w-12 h-12 border-b border-l border-white/40 pointer-events-none" />
-      <div className="absolute bottom-6 right-6 w-12 h-12 border-b border-r border-white/40 pointer-events-none" />
+      <div className="absolute top-6 left-6 w-12 h-12 border-t border-l border-white/30 pointer-events-none" />
+      <div className="absolute top-6 right-6 w-12 h-12 border-t border-r border-white/30 pointer-events-none" />
+      <div className="absolute bottom-6 left-6 w-12 h-12 border-b border-l border-white/30 pointer-events-none" />
+      <div className="absolute bottom-6 right-6 w-12 h-12 border-b border-r border-white/30 pointer-events-none" />
 
-      {/* Soft sunlit atmospheric circles */}
-      <div className="absolute top-[-10%] right-[-5%] w-96 h-96 rounded-full bg-white/15 blur-3xl pointer-events-none" />
-      <div className="absolute bottom-[-12%] left-[-5%] w-96 h-96 rounded-full bg-[#93C5FD]/25 blur-3xl pointer-events-none" />
+      {/* Soft royal sapphire atmospheric light pools */}
+      <div className="absolute top-[-10%] right-[-5%] w-96 h-96 rounded-full bg-[#2563EB]/20 blur-3xl pointer-events-none" />
+      <div className="absolute bottom-[-12%] left-[-5%] w-96 h-96 rounded-full bg-[#1E40AF]/25 blur-3xl pointer-events-none" />
 
       <div className="relative z-10 w-full max-w-xl text-center space-y-6 my-auto py-6">
         {/* Bismillah in Pure Luminous White */}
@@ -162,12 +162,12 @@ export const OpeningEnvelope: React.FC<OpeningEnvelopeProps> = ({ isOpen, onOpen
                     aria-label="Open your engagement invitation"
                     className="group relative cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-white rounded-full z-10"
                   >
-                    <div className="w-20 h-20 rounded-full bg-white shadow-[0_14px_35px_rgba(9,41,112,0.4)] flex items-center justify-center border-[3px] border-[#DBEAFE] transition-transform duration-300">
-                      <div className="w-15 h-15 w-[60px] h-[60px] rounded-full border border-[#1E78F2]/35 flex flex-col items-center justify-center bg-gradient-to-br from-[#FFFFFF] to-[#EFF6FF]">
-                        <span className="font-serif italic font-bold text-lg leading-none text-[#1558C0]">
+                    <div className="w-20 h-20 rounded-full bg-white shadow-[0_14px_35px_rgba(3,10,28,0.55)] flex items-center justify-center border-[3px] border-[#DBEAFE] transition-transform duration-300">
+                      <div className="w-[60px] h-[60px] rounded-full border border-[#0B1D42]/25 flex flex-col items-center justify-center bg-gradient-to-br from-[#FFFFFF] to-[#EFF6FF]">
+                        <span className="font-serif italic font-bold text-lg leading-none text-[#0B1D42]">
                           FA
                         </span>
-                        <span className="text-[8px] uppercase tracking-widest mt-1 font-bold text-[#1E78F2]">
+                        <span className="text-[8px] uppercase tracking-widest mt-1 font-bold text-[#163A7A]">
                           2026
                         </span>
                       </div>
@@ -181,9 +181,9 @@ export const OpeningEnvelope: React.FC<OpeningEnvelopeProps> = ({ isOpen, onOpen
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
                   disabled={isOpening}
-                  className="inline-flex items-center gap-2.5 px-8 py-3.5 rounded-full bg-white text-[#1558C0] hover:bg-[#F0F7FF] text-xs uppercase tracking-[0.22em] font-bold shadow-[0_14px_34px_rgba(9,41,112,0.35)] transition-all duration-300 cursor-pointer"
+                  className="inline-flex items-center gap-2.5 px-8 py-3.5 rounded-full bg-white text-[#0B1D42] hover:bg-[#F0F7FF] text-xs uppercase tracking-[0.22em] font-bold shadow-[0_14px_36px_rgba(3,10,28,0.5)] transition-all duration-300 cursor-pointer"
                 >
-                  <MailOpen className="w-4 h-4 text-[#1E78F2]" />
+                  <MailOpen className="w-4 h-4 text-[#0B1D42]" />
                   <span>{isOpening ? 'Opening Invitation...' : 'Open Your Invitation'}</span>
                 </motion.button>
               </div>
