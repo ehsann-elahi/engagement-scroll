@@ -4,223 +4,218 @@
 
 @layer base {
   :root {
-    --bg-deep: #050811;
-    --bg-surface: #0A0F1F;
-    --bg-card: rgba(13, 21, 41, 0.75);
-    --gold-bright: #FFF1C5;
-    --gold-champagne: #ECC872;
-    --gold-foil: #E5BE65;
-    --gold-rich: #C99B3B;
-    --gold-deep: #8F6A1E;
-    --diamond-blue: #D4E5F7;
-    --sapphire-dark: #121F38;
-    --text-primary: #F8FAFC;
-    --text-secondary: #CBD5E1;
-    --text-muted: #94A3B8;
+    --blue-bright: #1E78F2;
+    --blue-royal: #1558C0;
+    --blue-cobalt: #1147A8;
+    --blue-azure: #2B8AF7;
+    --blue-sky: #60A5FA;
+    --white-pure: #FFFFFF;
+    --white-pearl: #F0F7FF;
+    --white-ice: #DBEAFE;
+    --glass-bg: rgba(255, 255, 255, 0.14);
+    --glass-border: rgba(255, 255, 255, 0.34);
   }
 
   html {
-    scroll-behavior: smooth;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
-    background-color: #050811;
+    background-color: #1558C0;
+    color: #FFFFFF;
   }
 
   body {
-    background-color: #050811;
-    color: #F8FAFC;
+    background: linear-gradient(160deg, #1E7AF5 0%, #155CC8 35%, #1A6CE0 70%, #0F4CB0 100%);
+    background-attachment: fixed;
+    color: #FFFFFF;
     font-family: 'Manrope', system-ui, sans-serif;
-    background:
-      radial-gradient(circle at 50% 0%, rgba(27, 54, 93, 0.32) 0%, transparent 60%),
-      radial-gradient(circle at 10% 30%, rgba(201, 155, 59, 0.1) 0%, transparent 50%),
-      radial-gradient(circle at 90% 70%, rgba(27, 54, 93, 0.25) 0%, transparent 55%),
-      #050811;
     min-height: 100vh;
     overflow-x: hidden;
   }
 
-  /* Custom luxury scrollbar */
+  /* Custom refined bright blue & white scrollbar */
   ::-webkit-scrollbar {
-    width: 6px;
+    width: 7px;
   }
   ::-webkit-scrollbar-track {
-    background: #050811;
+    background: #124EB0;
   }
   ::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, #ECC872, #C99B3B);
+    background: rgba(255, 255, 255, 0.65);
     border-radius: 9999px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #FFF1C5;
+    background: #FFFFFF;
   }
 }
 
 /* ========================================================= */
-/* LUXURY CRYSTAL & OBSIDIAN GLASSMORPHISM CARDS */
+/* LUMINOUS FROSTED CRYSTAL GLASS SURFACES (BRIGHT BLUE MODE) */
 /* ========================================================= */
-.crystal-card {
-  background: linear-gradient(165deg, rgba(16, 26, 49, 0.78) 0%, rgba(8, 14, 28, 0.88) 100%);
-  border: 1px solid rgba(236, 200, 114, 0.28);
+.azure-glass {
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.22) 0%,
+    rgba(255, 255, 255, 0.10) 55%,
+    rgba(255, 255, 255, 0.16) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.38);
   box-shadow:
-    0 24px 60px -15px rgba(0, 0, 0, 0.75),
-    0 0 0 1px rgba(255, 255, 255, 0.06) inset,
-    0 0 35px -5px rgba(236, 200, 114, 0.08);
+    0 24px 60px -15px rgba(8, 36, 98, 0.32),
+    inset 0 1px 1px rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+}
+
+.azure-glass-strong {
+  background: linear-gradient(
+    155deg,
+    rgba(255, 255, 255, 0.26) 0%,
+    rgba(255, 255, 255, 0.13) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.48);
+  box-shadow:
+    0 32px 72px -18px rgba(7, 32, 88, 0.38),
+    inset 0 1.5px 1px rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(26px);
+  -webkit-backdrop-filter: blur(26px);
+}
+
+.azure-arch {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.24) 0%,
+    rgba(255, 255, 255, 0.08) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  box-shadow:
+    0 28px 64px -16px rgba(9, 41, 112, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
 }
 
-.crystal-card-interactive {
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s ease;
+/* ========================================================= */
+/* PURE WHITE PEARL ARTWORK ILLUMINATION FOR RINGS & HANDS */
+/* ========================================================= */
+.pearl-art-filter {
+  filter: brightness(0) invert(1) drop-shadow(0 0 18px rgba(255, 255, 255, 0.65)) drop-shadow(0 6px 14px rgba(10, 45, 115, 0.35));
 }
 
-.crystal-card-interactive:hover {
-  border-color: rgba(236, 200, 114, 0.55);
-  box-shadow:
-    0 30px 70px -15px rgba(0, 0, 0, 0.85),
-    0 0 0 1px rgba(236, 200, 114, 0.3) inset,
-    0 0 45px rgba(236, 200, 114, 0.16);
-  transform: translateY(-4px);
+.pearl-art-soft {
+  filter: brightness(0) invert(1) drop-shadow(0 0 14px rgba(255, 255, 255, 0.5));
 }
 
 /* ========================================================= */
-/* GOLD FOIL & CELESTIAL METALLIC GRADIENTS */
+/* SPECULAR LIGHT SHEEN ON LUXURY PLATES */
 /* ========================================================= */
-.gold-text-foil {
-  background: linear-gradient(135deg, #FFF3D1 0%, #ECC872 32%, #FFE599 48%, #C99B3B 78%, #ECC872 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  display: inline-block;
-}
-
-.gold-text-shimmer {
-  background: linear-gradient(90deg, #ECC872 0%, #FFF3D1 25%, #ECC872 50%, #C99B3B 75%, #ECC872 100%);
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  animation: shineText 6s linear infinite;
-}
-
-/* Brilliant Gold Foil Filter for line artwork */
-.gold-filter-art {
-  filter: invert(82%) sepia(85%) saturate(850%) hue-rotate(5deg) brightness(115%) contrast(110%) drop-shadow(0 0 16px rgba(236, 200, 114, 0.75));
-}
-
-@keyframes shineText {
-  to {
-    background-position: 200% center;
-  }
-}
-
-/* ========================================================= */
-/* KINETIC ANIMATIONS & RING PULSES */
-/* ========================================================= */
-@keyframes ringPulse {
-  0% {
-    transform: scale(0.85);
-    opacity: 0.8;
-  }
-  50% {
-    transform: scale(1.15);
-    opacity: 0.35;
-  }
-  100% {
-    transform: scale(1.4);
-    opacity: 0;
-  }
-}
-
-@keyframes floatSmooth {
-  0%, 100% {
-    transform: translateY(0px) rotate(0deg);
-  }
-  50% {
-    transform: translateY(-14px) rotate(1.5deg);
-  }
-}
-
-@keyframes diamondGlint {
-  0%, 100% {
-    opacity: 0.2;
-    transform: scale(0.6) rotate(0deg);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.25) rotate(180deg);
-    filter: drop-shadow(0 0 8px #FFF1C5);
-  }
-}
-
-@keyframes auraBreath {
-  0%, 100% {
-    opacity: 0.35;
-    transform: scale(0.96);
-  }
-  50% {
-    opacity: 0.7;
-    transform: scale(1.05);
-  }
-}
-
-.animate-ring-pulse {
-  animation: ringPulse 3.8s cubic-bezier(0.16, 1, 0.3, 1) infinite;
-}
-
-.animate-float-smooth {
-  animation: floatSmooth 6s ease-in-out infinite;
-}
-
-.animate-diamond-glint {
-  animation: diamondGlint 2.8s ease-in-out infinite;
-}
-
-.animate-aura-breath {
-  animation: auraBreath 5s ease-in-out infinite;
-}
-
-/* Wing flap animation for butterflies */
-@keyframes butterflyFlap {
-  from {
-    transform: scaleX(1);
-  }
-  to {
-    transform: scaleX(0.28);
-  }
-}
-
-.animate-wing {
-  transform-origin: 50% 50%;
-  animation: butterflyFlap 0.38s ease-in-out infinite alternate;
-}
-
-/* Card Specular Sheen Effect */
-.sheen-card {
+.sheen-plate {
   position: relative;
   overflow: hidden;
 }
 
-.sheen-card::after {
+.sheen-plate::after {
   content: '';
   position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
+  inset: -100%;
   background: linear-gradient(
-    60deg,
-    transparent 30%,
-    rgba(255, 241, 197, 0.08) 45%,
-    rgba(255, 241, 197, 0.15) 50%,
-    rgba(255, 241, 197, 0.08) 55%,
-    transparent 70%
+    115deg,
+    transparent 38%,
+    rgba(255, 255, 255, 0.14) 47%,
+    rgba(255, 255, 255, 0.28) 50%,
+    rgba(255, 255, 255, 0.14) 53%,
+    transparent 62%
   );
-  transform: rotate(25deg) translateY(-100%);
-  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translateX(-60%);
+  transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
   pointer-events: none;
 }
 
-.sheen-card:hover::after {
-  transform: rotate(25deg) translateY(100%);
+.sheen-plate:hover::after {
+  transform: translateX(60%);
+}
+
+/* ========================================================= */
+/* KINETIC ANIMATIONS */
+/* ========================================================= */
+@keyframes orbitalRipple {
+  0% {
+    transform: scale(0.84);
+    opacity: 0.72;
+  }
+  65% {
+    opacity: 0.22;
+  }
+  100% {
+    transform: scale(1.48);
+    opacity: 0;
+  }
+}
+
+@keyframes gentleFloat {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-12px) rotate(1.5deg);
+  }
+}
+
+@keyframes starGlint {
+  0%, 100% {
+    opacity: 0.35;
+    transform: scale(0.7) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.25) rotate(90deg);
+  }
+}
+
+@keyframes slowSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes waveShift {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(-3%);
+  }
+}
+
+.animate-orbital-ripple {
+  animation: orbitalRipple 3.6s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+.animate-gentle-float {
+  animation: gentleFloat 5.8s ease-in-out infinite;
+}
+
+.animate-star-glint {
+  animation: starGlint 2.8s ease-in-out infinite;
+}
+
+.animate-slow-spin {
+  animation: slowSpin 42s linear infinite;
+}
+
+/* Tabular numbers for chronometer stability */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* 3D perspective helpers */
+.perspective-1200 {
+  perspective: 1200px;
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
 }
 
 @media (prefers-reduced-motion: reduce) {

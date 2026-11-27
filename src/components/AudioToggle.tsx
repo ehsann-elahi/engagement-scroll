@@ -28,31 +28,30 @@ export const AudioToggle: React.FC = () => {
   }, []);
 
   return (
-    <div className="fixed top-5 right-5 z-50">
+    <div className="fixed top-4 right-4 sm:top-5 sm:right-6 z-50">
       <button
         onClick={handleToggle}
         aria-label={isMuted ? 'Unmute music' : 'Mute music'}
-        className="group relative flex items-center gap-2.5 px-4 py-2 rounded-full bg-[#0A0F1F]/90 hover:bg-[#121B33] backdrop-blur-xl border border-[#ECC872]/40 text-[#F8FAFC] transition-all duration-300 shadow-[0_4px_20px_rgba(0,0,0,0.6)] hover:shadow-[0_0_20px_rgba(236,200,114,0.3)] cursor-pointer"
+        className="group relative flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/15 hover:bg-white/25 backdrop-blur-xl border border-white/40 text-white transition-all duration-300 shadow-[0_8px_28px_rgba(9,41,112,0.28)] cursor-pointer"
       >
-        {/* Animated Audio Equalizer Bars when playing */}
         {!isMuted ? (
-          <div className="flex items-center gap-0.5 h-3">
-            <span className="w-0.5 h-full bg-[#ECC872] animate-[bounce_0.8s_ease-in-out_infinite]" />
-            <span className="w-0.5 h-3/4 bg-[#FFF1C5] animate-[bounce_1.1s_ease-in-out_infinite_0.2s]" />
-            <span className="w-0.5 h-1/2 bg-[#ECC872] animate-[bounce_0.9s_ease-in-out_infinite_0.4s]" />
+          <div className="flex items-end gap-[2.5px] h-3.5" aria-hidden="true">
+            <span className="w-[2px] h-full bg-white rounded-full animate-[bounce_0.75s_ease-in-out_infinite]" />
+            <span className="w-[2px] h-2/3 bg-white/90 rounded-full animate-[bounce_1.05s_ease-in-out_infinite_0.2s]" />
+            <span className="w-[2px] h-4/5 bg-white rounded-full animate-[bounce_0.9s_ease-in-out_infinite_0.35s]" />
           </div>
         ) : (
-          <span className="w-2 h-2 rounded-full bg-slate-500" />
+          <span className="w-2 h-2 rounded-full bg-white/45" />
         )}
 
         {!isMuted ? (
-          <Volume2 className="w-4 h-4 text-[#ECC872] transition-transform duration-300 group-hover:scale-110" />
+          <Volume2 className="w-4 h-4 text-white transition-transform duration-300 group-hover:scale-110" />
         ) : (
-          <VolumeX className="w-4 h-4 text-[#94A3B8] transition-transform duration-300 group-hover:scale-110" />
+          <VolumeX className="w-4 h-4 text-white/70 transition-transform duration-300 group-hover:scale-110" />
         )}
 
-        <span className="text-[10px] uppercase tracking-widest font-sans text-[#F8FAFC] hidden sm:inline font-semibold">
-          {!isMuted ? 'Ceremony Symphony' : 'Muted'}
+        <span className="text-[10px] uppercase tracking-[0.22em] font-sans text-white hidden sm:inline font-semibold">
+          {!isMuted ? 'Sound On' : 'Muted'}
         </span>
       </button>
     </div>

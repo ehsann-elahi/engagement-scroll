@@ -16,96 +16,76 @@ async function capture() {
 
   console.log('Navigating to http://localhost:4173/...');
   await page.goto('http://localhost:4173/', { waitUntil: 'networkidle0', timeout: 30000 });
+  await new Promise((r) => setTimeout(r, 900));
 
-  // 1. Capture Opening Envelope
-  await new Promise(r => setTimeout(r, 1000));
-  await page.screenshot({ path: path.join(ARTIFACT_DIR, 'modern-01-envelope.png') });
-  console.log('Captured modern-01-envelope.png');
+  // 1. Desktop Sealed 3D Envelope
+  await page.screenshot({ path: path.join(ARTIFACT_DIR, 'azure-01-envelope.png') });
+  console.log('Captured azure-01-envelope.png');
 
-  // Click Open Invitation
+  // Open Invitation
   const openBtn = await page.$('button[aria-label="Open your engagement invitation"]');
-  if (openBtn) {
-    await openBtn.click();
-  } else {
-    // fallback click on text
-    const buttons = await page.$$('button');
-    for (const b of buttons) {
-      const text = await page.evaluate(el => el.innerText, b);
-      if (text.includes('Open Your Invitation')) {
-        await b.click();
-        break;
+  if (openBtn) await openBtn.click();
+  await new Promise((r) => setTimeout(r, 2200));
+
+  // 2. Desktop Hero
+  await page.screenshot({ path: path.join(ARTIFACT_DIR, 'azure-02-hero.png') });
+  console.log('Captured azure-02-hero.png');
+
+  // Helper to scroll smoothly so GSAP ScrollTrigger updates every scrub point
+  const scrollToAndCapture = async (id, filename) => {
+    await page.evaluate((targetId) => {
+      const el = document.getElementById(targetId);
+      if (el) {
+        const y = el.getBoundingClientRect().top + window.scrollY;
+        window.scrollTo({ top: y, behavior: 'instant' });
       }
-    }
-  }
+    }, id);
+    await new Promise((r) => setTimeout(r, 900));
+    await page.screenshot({ path: path.join(ARTIFACT_DIR, filename) });
+    console.log(`Captured ${filename}`);
+  };
 
-  // Wait for envelope transition to finish
-  await new Promise(r => setTimeout(r, 2000));
+  await scrollToAndCapture('couple', 'azure-03-couple.png');
+  await scrollToAndCapture('blessing', 'azure-04-blessing.png');
+  await scrollToAndCapture('date', 'azure-05-date.png');
+  await scrollToAndCapture('celebration', 'azure-06-countdown.png');
+  await scrollToAndCapture('closing', 'azure-07-closing.png');
 
-  // 2. Capture Hero Scene with 3D Floating Rings
-  await page.screenshot({ path: path.join(ARTIFACT_DIR, 'modern-02-hero-rings.png') });
-  console.log('Captured modern-02-hero-rings.png');
-
-  // 3. Scroll to Couple Scene
-  await page.evaluate(() => {
-    document.getElementById('couple')?.scrollIntoView({ behavior: 'instant' });
+  // Check page text to ensure ZERO GPS text exists anywhere
+  const hasGpsText = await page.evaluate(() => {
+    return document.body.innerText.includes('GPS') || document.body.innerText.includes('31.339');
   });
-  await new Promise(r => setTimeout(r, 1200));
-  await page.screenshot({ path: path.join(ARTIFACT_DIR, 'modern-03-couple.png') });
-  console.log('Captured modern-03-couple.png');
+  console.log('GPS text present on page:', hasGpsText);
 
-  // 4. Scroll to Blessing Scene
-  await page.evaluate(() => {
-    document.getElementById('blessing')?.scrollIntoView({ behavior: 'instant' });
+  // Mobile Viewport Captures (fresh reload for envelope + open hero + closing)
+  const mobilePage = await browser.newPage();
+  await mobilePage.setViewport({ width: 390, height: 844, deviceScaleFactor: 2, isMobile: true });
+  await mobilePage.goto('http://localhost:4173/', { waitUntil: 'networkidle0', timeout: 30000 });
+  await new Promise((r) => setTimeout(r, 900));
+
+  await mobilePage.screenshot({ path: path.join(ARTIFACT_DIR, 'azure-mobile-envelope.png') });
+  console.log('Captured azure-mobile-envelope.png');
+
+  const mobileBtn = await mobilePage.$('button[aria-label="Open your engagement invitation"]');
+  if (mobileBtn) await mobileBtn.click();
+  await new Promise((r) => setTimeout(r, 2200));
+
+  await mobilePage.screenshot({ path: path.join(ARTIFACT_DIR, 'azure-mobile-hero.png') });
+  console.log('Captured azure-mobile-hero.png');
+
+  await mobilePage.evaluate(() => {
+    const el = document.getElementById('closing');
+    if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY, behavior: 'instant' });
   });
-  await new Promise(r => setTimeout(r, 1200));
-  await page.screenshot({ path: path.join(ARTIFACT_DIR, 'modern-04-blessing.png') });
-  console.log('Captured modern-04-blessing.png');
-
-  // 5. Scroll to Date Scene
-  await page.evaluate(() => {
-    document.getElementById('date')?.scrollIntoView({ behavior: 'instant' });
-  });
-  await new Promise(r => setTimeout(r, 1200));
-  await page.screenshot({ path: path.join(ARTIFACT_DIR, 'modern-05-date.png') });
-  console.log('Captured modern-05-date.png');
-
-  // 6. Scroll to Celebration & Countdown Scene
-  await page.evaluate(() => {
-    document.getElementById('celebration')?.scrollIntoView({ behavior: 'instant' });
-  });
-  await new Promise(r => setTimeout(r, 1200));
-  await page.screenshot({ path: path.join(ARTIFACT_DIR, 'modern-06-countdown.png') });
-  console.log('Captured modern-06-countdown.png');
-
-  // 7. Scroll to Closing Venue & Actions Scene
-  await page.evaluate(() => {
-    document.getElementById('closing')?.scrollIntoView({ behavior: 'instant' });
-  });
-  await new Promise(r => setTimeout(r, 1200));
-  await page.screenshot({ path: path.join(ARTIFACT_DIR, 'modern-07-closing.png') });
-  console.log('Captured modern-07-closing.png');
-
-  // 8. Capture Full Page Desktop
-  await page.screenshot({ path: path.join(ARTIFACT_DIR, 'modern-desktop-full.png'), fullPage: true });
-  console.log('Captured modern-desktop-full.png');
-
-  // 9. Mobile Viewport (iPhone 14/15 size: 390x844)
-  await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 2, isMobile: true });
-  await page.evaluate(() => {
-    window.scrollTo({ top: 0, behavior: 'instant' });
-  });
-  await new Promise(r => setTimeout(r, 1000));
-  await page.screenshot({ path: path.join(ARTIFACT_DIR, 'modern-mobile-hero.png') });
-  console.log('Captured modern-mobile-hero.png');
-
-  await page.screenshot({ path: path.join(ARTIFACT_DIR, 'modern-mobile-full.png'), fullPage: true });
-  console.log('Captured modern-mobile-full.png');
+  await new Promise((r) => setTimeout(r, 900));
+  await mobilePage.screenshot({ path: path.join(ARTIFACT_DIR, 'azure-mobile-closing.png') });
+  console.log('Captured azure-mobile-closing.png');
 
   await browser.close();
-  console.log('All screenshots captured successfully!');
+  console.log('All Azure Royal Blue screenshots captured!');
 }
 
-capture().catch(err => {
+capture().catch((err) => {
   console.error('Capture error:', err);
   process.exit(1);
 });

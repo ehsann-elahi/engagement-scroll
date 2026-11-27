@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { eventConfig } from '../config/event';
 import {
   Sparkles,
@@ -7,6 +8,7 @@ import {
   Clock,
   MapPin,
   Navigation,
+  Copy,
   Check,
   RotateCcw,
   MessageCircle,
@@ -16,116 +18,418 @@ import {
   Heart,
 } from 'lucide-react';
 
+gsap.registerPlugin(ScrollTrigger);
+
 interface CinematicScrollJourneyProps {
   onReplay: () => void;
+  isOpen: boolean;
 }
 
-// Delicate fluttering starlight butterfly component
-const Butterfly: React.FC<{
-  className?: string;
-  wingColor1?: string;
-  wingColor2?: string;
-}> = ({
-  className = '',
-  wingColor1 = '#FFF1C5',
-  wingColor2 = '#ECC872',
-}) => (
-  <div className={`pointer-events-none select-none ${className}`}>
-    <svg viewBox="0 0 100 80" className="w-9 h-7 drop-shadow-[0_0_8px_rgba(236,200,114,0.5)]">
-      <g className="animate-wing">
-        <path
-          d="M50 38C30 4 3 8 8 30c3 15 28 18 42 10Z"
-          fill={wingColor1}
-          fillOpacity="0.85"
-          stroke="#ECC872"
-          strokeWidth="1.2"
-        />
-        <path
-          d="M50 42C36 50 18 54 24 70c6 11 24-8 26-24Z"
-          fill={wingColor2}
-          fillOpacity="0.85"
-          stroke="#ECC872"
-          strokeWidth="1.2"
-        />
-      </g>
-      <g transform="translate(100 0) scale(-1 1)" className="animate-wing">
-        <path
-          d="M50 38C30 4 3 8 8 30c3 15 28 18 42 10Z"
-          fill={wingColor1}
-          fillOpacity="0.85"
-          stroke="#ECC872"
-          strokeWidth="1.2"
-        />
-        <path
-          d="M50 42C36 50 18 54 24 70c6 11 24-8 26-24Z"
-          fill={wingColor2}
-          fillOpacity="0.85"
-          stroke="#ECC872"
-          strokeWidth="1.2"
-        />
-      </g>
-      <ellipse cx="50" cy="42" rx="2.5" ry="14" fill="#ECC872" />
-      <path d="M49 28Q44 14 38 12M51 28Q56 14 62 12" stroke="#FFF1C5" strokeWidth="1.2" fill="none" />
-    </svg>
-  </div>
-);
+const CHAPTERS = [
+  { id: 'hero', label: 'Invitation' },
+  { id: 'couple', label: 'The Couple' },
+  { id: 'blessing', label: 'Blessing' },
+  { id: 'date', label: 'Save the Date' },
+  { id: 'celebration', label: 'Countdown' },
+  { id: 'closing', label: 'Venue' },
+];
 
-export const CinematicScrollJourney: React.FC<CinematicScrollJourneyProps> = ({ onReplay }) => {
+// Sculpted Circular SVG Ring Chronometer Dial
+const OrbitalDial: React.FC<{
+  value: number;
+  max: number;
+  label: string;
+  isSeconds?: boolean;
+}> = ({ value, max, label, isSeconds = false }) => {
+  const radius = 56;
+  const circumference = 2 * Math.PI * radius;
+  const clampedRatio = Math.max(0.03, Math.min(1, value / max));
+  const strokeDashoffset = circumference * (1 - clampedRatio);
+
+  return (
+    <div className="orbital-dial relative flex flex-col items-center justify-center group">
+      <div className="relative w-32 h-32 sm:w-36 sm:h-36 flex items-center justify-center">
+        {/* Soft glass sphere background */}
+        <div className="absolute inset-2 rounded-full azure-glass transition-transform duration-500 group-hover:scale-[1.03]" />
+
+        {/* Live Animated Orbital SVG Track */}
+        <svg
+          className="w-full h-full -rotate-90 drop-shadow-[0_0_12px_rgba(255,255,255,0.4)]"
+          viewBox="0 0 128 128"
+          aria-hidden="true"
+        >
+          {/* Base translucent ring */}
+          <circle
+            cx="64"
+            cy="64"
+            r={radius}
+            fill="none"
+            stroke="rgba(255,255,255,0.22)"
+            strokeWidth="2.5"
+          />
+          {/* Live sweeping crisp white progress arc */}
+          <circle
+            cx="64"
+            cy="64"
+            r={radius}
+            fill="none"
+            stroke="#FFFFFF"
+            strokeWidth="3.5"
+            strokeLinecap="round"
+            strokeDasharray={circumference}
+            strokeDashoffset={strokeDashoffset}
+            style={{ transition: 'stroke-dashoffset 0.7s cubic-bezier(0.16, 1, 0.3, 1)' }}
+          />
+        </svg>
+
+        {/* Center Numeric Readout */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <span className="font-serif text-4xl sm:text-5xl text-white font-normal leading-none tabular-nums drop-shadow-[0_2px_12px_rgba(9,41,112,0.3)]">
+            {String(value).padStart(2, '0')}
+          </span>
+          <span className="text-[10px] uppercase tracking-[0.24em] text-white/90 font-semibold mt-1.5">
+            {label}
+          </span>
+        </div>
+
+        {/* Live pulse dot on Seconds dial */}
+        {isSeconds && (
+          <span className="absolute top-2.5 right-3.5 flex h-2.5 w-2.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-80" />
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-white" />
+          </span>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export const CinematicScrollJourney: React.FC<CinematicScrollJourneyProps> = ({
+  onReplay,
+  isOpen,
+}) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const heroRef = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll();
-
+  const progressBarRef = useRef<HTMLDivElement>(null);
+  const [activeChapter, setActiveChapter] = useState('hero');
   const [copiedAddress, setCopiedAddress] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
+  const [pointerTilt, setPointerTilt] = useState({ x: 0, y: 0 });
 
-  // Mouse tilt tracking for 3D hero rings interaction
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-
+  // Smooth 3D pointer tilt for hero diamond rings
   const handleMouseMove = (e: React.MouseEvent) => {
-    const { clientX, clientY } = e;
-    const centerX = window.innerWidth / 2;
-    const centerY = window.innerHeight / 2;
-    setMousePos({
-      x: (clientX - centerX) / centerX,
-      y: (clientY - centerY) / centerY,
-    });
+    const nx = (e.clientX / window.innerWidth - 0.5) * 2;
+    const ny = (e.clientY / window.innerHeight - 0.5) * 2;
+    setPointerTilt({ x: nx, y: ny });
   };
 
-  // Parallax transform bindings based on scroll
-  const ringsY = useTransform(scrollYProgress, [0, 0.35], [0, 120]);
-  const ringsScale = useTransform(scrollYProgress, [0, 0.25], [1, 0.88]);
-  const ringsOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0.2]);
-
-  const smoothRingsY = useSpring(ringsY, { stiffness: 80, damping: 20 });
-  const smoothRingsScale = useSpring(ringsScale, { stiffness: 80, damping: 20 });
-
-  // Real-time Countdown calculation for 2026-12-25T20:00:00+05:00
+  // Real-time Countdown to Friday, 25 December 2026 at 8:00 PM (Asia/Karachi)
   const calculateTimeLeft = () => {
     const targetDate = new Date(eventConfig.targetDateTime).getTime();
-    const now = new Date().getTime();
-    const difference = targetDate - now;
-
-    if (difference <= 0) {
+    const now = Date.now();
+    const diff = targetDate - now;
+    if (diff <= 0) {
       return { days: 0, hours: 0, minutes: 0, seconds: 0, isPast: true };
     }
-
     return {
-      days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-      hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-      minutes: Math.floor((difference / 1000 / 60) % 60),
-      seconds: Math.floor((difference / 1000) % 60),
+      days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+      hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
+      minutes: Math.floor((diff / (1000 * 60)) % 60),
+      seconds: Math.floor((diff / 1000) % 60),
       isPast: false,
     };
   };
 
-  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
+  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft(calculateTimeLeft());
-    }, 1000);
-    return () => clearInterval(timer);
+    const interval = setInterval(() => setTimeLeft(calculateTimeLeft()), 1000);
+    return () => clearInterval(interval);
   }, []);
+
+  // =====================================================================
+  // AUTHORED GSAP SCROLLTRIGGER CHOREOGRAPHY (UNIQUE PER SCENE)
+  // =====================================================================
+  useEffect(() => {
+    if (!isOpen || !containerRef.current) return;
+
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const ctx = gsap.context(() => {
+      // Top continuous scroll progress bar
+      if (progressBarRef.current) {
+        gsap.to(progressBarRef.current, {
+          scaleX: 1,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: 'top top',
+            end: 'bottom bottom',
+            scrub: 0.2,
+          },
+        });
+      }
+
+      // Active chapter observer for side navigation rail
+      CHAPTERS.forEach(({ id }) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        ScrollTrigger.create({
+          trigger: el,
+          start: 'top 55%',
+          end: 'bottom 45%',
+          onEnter: () => setActiveChapter(id),
+          onEnterBack: () => setActiveChapter(id),
+        });
+      });
+
+      if (prefersReduced) return;
+
+      // 1. HERO SCENE: Split-Curtain Name Parting + Scrubbed 3D Rings Expansion + Marquee
+      gsap.to('.hero-groom-name', {
+        x: -85,
+        opacity: 0.45,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: '#hero',
+          start: 'top top',
+          end: 'bottom top',
+          scrub: 1,
+        },
+      });
+
+      gsap.to('.hero-bride-name', {
+        x: 85,
+        opacity: 0.45,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: '#hero',
+          start: 'top top',
+          end: 'bottom top',
+          scrub: 1,
+        },
+      });
+
+      gsap.to('.hero-rings-stage', {
+        scale: 1.24,
+        rotation: 16,
+        y: -36,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: '#hero',
+          start: 'top top',
+          end: 'bottom top',
+          scrub: 1,
+        },
+      });
+
+      gsap.to('.kinetic-marquee-track', {
+        xPercent: -24,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: 'top top',
+          end: 'bottom bottom',
+          scrub: 1.2,
+        },
+      });
+
+      // 2. COUPLE SCENE: Live Scroll-Drawn Center Spine + Opposing Parallax Cathedral Arches
+      const spineLine = containerRef.current?.querySelector('.couple-spine-line') as SVGLineElement | null;
+      if (spineLine) {
+        const len = spineLine.getTotalLength ? spineLine.getTotalLength() : 420;
+        gsap.set(spineLine, { strokeDasharray: len, strokeDashoffset: len });
+        gsap.to(spineLine, {
+          strokeDashoffset: 0,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: '#couple',
+            start: 'top 75%',
+            end: 'center 45%',
+            scrub: 1,
+          },
+        });
+      }
+
+      gsap.fromTo(
+        '.couple-hands-emblem',
+        { scale: 0.86, y: 24 },
+        {
+          scale: 1.04,
+          y: -14,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: '#couple',
+            start: 'top 85%',
+            end: 'bottom 25%',
+            scrub: 1,
+          },
+        }
+      );
+
+      gsap.fromTo(
+        '.arch-groom',
+        { x: -45, y: 28, rotateY: 12 },
+        {
+          x: 0,
+          y: -16,
+          rotateY: 0,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: '#couple',
+            start: 'top 85%',
+            end: 'center 42%',
+            scrub: 1,
+          },
+        }
+      );
+
+      gsap.fromTo(
+        '.arch-bride',
+        { x: 45, y: -18, rotateY: -12 },
+        {
+          x: 0,
+          y: 18,
+          rotateY: 0,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: '#couple',
+            start: 'top 85%',
+            end: 'center 42%',
+            scrub: 1,
+          },
+        }
+      );
+
+      // 3. BLESSING SCENE: Rotating Geometric Mandala + Expanding Sanctum + Line Draw
+      gsap.to('.blessing-mandala', {
+        rotation: 90,
+        scale: 1.12,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: '#blessing',
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: 1.2,
+        },
+      });
+
+      gsap.fromTo(
+        '.blessing-arabic-focus',
+        { scale: 0.9, y: 26 },
+        {
+          scale: 1.02,
+          y: -10,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: '#blessing',
+            start: 'top 80%',
+            end: 'center 45%',
+            scrub: 1,
+          },
+        }
+      );
+
+      gsap.fromTo(
+        '.blessing-rule',
+        { scaleX: 0 },
+        {
+          scaleX: 1,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: '#blessing',
+            start: 'top 70%',
+            end: 'center 45%',
+            scrub: 0.8,
+          },
+        }
+      );
+
+      // 4. DATE SCENE: Monumental Watermark Parallax + 3D Flattening Crystal Invitation Plate
+      gsap.fromTo(
+        '.date-watermark',
+        { y: -70, x: -30 },
+        {
+          y: 70,
+          x: 30,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: '#date',
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: 1,
+          },
+        }
+      );
+
+      gsap.fromTo(
+        '.date-plate-3d',
+        { rotateX: 24, rotateY: -8, scale: 0.9, y: 40 },
+        {
+          rotateX: 0,
+          rotateY: 0,
+          scale: 1,
+          y: 0,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: '#date',
+            start: 'top 85%',
+            end: 'center 48%',
+            scrub: 1,
+          },
+        }
+      );
+
+      // 5. CELEBRATION SCENE: Staggered Orbital Dial Constellation Fan-Out
+      gsap.fromTo(
+        '.orbital-dial',
+        { y: 42, scale: 0.86 },
+        {
+          y: 0,
+          scale: 1,
+          stagger: 0.08,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: '#celebration',
+            start: 'top 85%',
+            end: 'center 50%',
+            scrub: 1,
+          },
+        }
+      );
+
+      // 6. CLOSING SCENE: Rising Horizon Sanctuary
+      gsap.fromTo(
+        '.closing-arch-horizon',
+        { y: 48, scale: 0.95 },
+        {
+          y: 0,
+          scale: 1,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: '#closing',
+            start: 'top 88%',
+            end: 'center 52%',
+            scrub: 1,
+          },
+        }
+      );
+    }, containerRef);
+
+    // Ensure ScrollTrigger measures freshly once envelope unmounts
+    const refreshTimer = setTimeout(() => ScrollTrigger.refresh(), 250);
+
+    return () => {
+      clearTimeout(refreshTimer);
+      ctx.revert();
+    };
+  }, [isOpen]);
+
+  const scrollToSection = (id: string) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
 
   const handleCopyAddress = () => {
     navigator.clipboard.writeText(`${eventConfig.venue}, ${eventConfig.venueFullAddress}`);
@@ -144,7 +448,7 @@ export const CinematicScrollJourney: React.FC<CinematicScrollJourneyProps> = ({ 
           url: window.location.href,
         });
       } catch {
-        // User cancelled
+        // user cancelled
       }
     } else {
       navigator.clipboard.writeText(window.location.href);
@@ -167,437 +471,527 @@ export const CinematicScrollJourney: React.FC<CinematicScrollJourneyProps> = ({ 
     <div
       ref={containerRef}
       onMouseMove={handleMouseMove}
-      className="relative w-full text-[#F8FAFC] overflow-x-clip"
+      className="relative w-full text-white overflow-x-clip"
     >
-      {/* Top Floating Golden Starlight Progress Bar */}
-      <motion.div
-        style={{ scaleX: scrollYProgress, transformOrigin: '0%' }}
-        className="fixed top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-[#ECC872] via-[#FFF1C5] to-[#ECC872] z-50 shadow-[0_0_12px_rgba(236,200,114,0.8)]"
+      {/* Top Continuous Pure-White Scroll Progress Bar */}
+      <div
+        ref={progressBarRef}
+        style={{ transform: 'scaleX(0)', transformOrigin: '0% 50%' }}
+        className="fixed top-0 left-0 right-0 h-[3px] bg-white z-50 shadow-[0_0_14px_rgba(255,255,255,0.9)]"
       />
 
-      {/* Persistent Elegant Top Navigation Bar */}
-      <div className="fixed top-0 inset-x-0 z-40 px-6 py-4 flex items-center justify-between pointer-events-none bg-gradient-to-b from-[#050811]/90 via-[#050811]/60 to-transparent backdrop-blur-[6px]">
-        <div className="flex items-center gap-3">
-          <span className="font-serif italic text-lg gold-text-foil font-bold tracking-wider">
-            F & A
+      {/* Persistent Minimalist Top Brand Bar */}
+      <header className="fixed top-0 inset-x-0 z-40 px-5 sm:px-8 py-4 flex items-center justify-between pointer-events-none">
+        <div className="pointer-events-auto inline-flex items-center gap-3 px-4 py-2 rounded-full bg-white/15 backdrop-blur-xl border border-white/35 shadow-[0_8px_24px_rgba(9,41,112,0.22)]">
+          <span className="font-serif italic text-base sm:text-lg text-white font-semibold tracking-wider">
+            F &amp; A
           </span>
-          <span className="text-[10px] uppercase tracking-widest text-[#CBD5E1] hidden sm:inline font-semibold">
-            · 25 December 2026
+          <span className="w-1 h-1 rounded-full bg-white/75 hidden sm:inline-block" />
+          <span className="text-[10px] uppercase tracking-[0.24em] text-white/95 hidden sm:inline font-semibold">
+            25 December 2026
           </span>
         </div>
-      </div>
+      </header>
 
-      {/* Floating Starlight Butterflies */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden z-10">
-        <Butterfly className="absolute top-[20%] left-[6%] animate-float-smooth" />
-        <Butterfly
-          className="absolute top-[48%] right-[8%] animate-float-smooth [animation-delay:2.5s]"
-          wingColor1="#D4E5F7"
-          wingColor2="#FFF1C5"
-        />
-        <Butterfly className="absolute top-[78%] left-[10%] animate-float-smooth [animation-delay:4s]" />
-      </div>
+      {/* Desktop Floating Chapter Navigation Rail */}
+      <nav
+        aria-label="Invitation Chapters"
+        className="fixed right-5 top-1/2 -translate-y-1/2 z-40 hidden lg:flex flex-col items-end gap-3.5"
+      >
+        {CHAPTERS.map((chapter) => {
+          const isActive = activeChapter === chapter.id;
+          return (
+            <button
+              key={chapter.id}
+              onClick={() => scrollToSection(chapter.id)}
+              className="group flex items-center gap-2.5 cursor-pointer outline-none"
+              aria-label={`Jump to ${chapter.label}`}
+            >
+              <span
+                className={`text-[10px] uppercase tracking-[0.22em] font-semibold transition-all duration-300 ${
+                  isActive
+                    ? 'text-white opacity-100 translate-x-0'
+                    : 'text-white/75 opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0'
+                }`}
+              >
+                {chapter.label}
+              </span>
+              <span
+                className={`block rounded-full transition-all duration-300 ${
+                  isActive
+                    ? 'w-3 h-3 bg-white shadow-[0_0_12px_#FFFFFF]'
+                    : 'w-2 h-2 bg-white/45 group-hover:bg-white/90'
+                }`}
+              />
+            </button>
+          );
+        })}
+      </nav>
 
-      {/* ========================================================= */}
-      {/* SCENE 01 — THE HOLY OPENING HERO WITH 3D FLOATING RINGS */}
-      {/* ========================================================= */}
+      {/* ================================================================= */}
+      {/* SCENE 01 — SPLIT-CURTAIN CELESTIAL HERO & SCRUBBED FLOATING RINGS */}
+      {/* ================================================================= */}
       <section
         id="hero"
-        ref={heroRef}
-        className="min-h-screen flex flex-col items-center justify-center text-center px-4 sm:px-6 py-24 relative max-w-4xl mx-auto z-10"
+        className="relative min-h-screen flex flex-col items-center justify-between text-center px-4 sm:px-8 pt-24 pb-8 z-10"
       >
-        <motion.div
-          initial={{ opacity: 0, y: 35, scale: 0.96 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-          className="space-y-5 sm:space-y-7 my-auto w-full"
-        >
-          {/* Holy Bismillah in Amiri Calligraphy with Luminous Backlight */}
-          <div className="relative inline-block">
-            <div className="absolute inset-0 bg-[#ECC872]/20 blur-2xl rounded-full pointer-events-none" />
-            <p className="relative font-arabic text-3xl sm:text-5xl md:text-6xl text-[#ECC872] tracking-wider leading-[2.3] select-none drop-shadow-[0_2px_15px_rgba(236,200,114,0.4)] pb-1">
-              {eventConfig.bismillahArabic}
-            </p>
-          </div>
+        {/* Top Bismillah */}
+        <div className="space-y-4 max-w-3xl mx-auto">
+          <p className="font-arabic text-3xl sm:text-5xl md:text-[3.5rem] text-white leading-[1.9] pb-2 select-none drop-shadow-[0_4px_22px_rgba(255,255,255,0.38)]">
+            {eventConfig.bismillahArabic}
+          </p>
+          <p className="text-[11px] sm:text-xs uppercase tracking-[0.32em] text-white/90 font-medium">
+            With the blessings of Allah · You are cordially invited
+          </p>
+        </div>
 
-          <span className="text-[11px] sm:text-xs uppercase tracking-ultra text-[#D4E5F7] font-sans font-semibold block">
-            With the blessings of Allah
-          </span>
+        {/* Centerpiece: Interactive 3D Floating White-Pearl Rings + Split-Curtain Names */}
+        <div className="relative w-full max-w-5xl mx-auto my-auto py-6 flex flex-col items-center justify-center">
+          {/* Interactive 3D Scrubbed Rings Medallion */}
+          <div className="hero-rings-stage relative mb-7 flex items-center justify-center">
+            {/* Concentric Pure-White Expanding Orbital Ripples */}
+            <div className="absolute w-52 h-52 sm:w-64 sm:h-64 rounded-full border border-white/40 animate-orbital-ripple pointer-events-none" />
+            <div className="absolute w-68 h-68 sm:w-80 sm:h-80 rounded-full border border-white/20 animate-orbital-ripple [animation-delay:1.7s] pointer-events-none" />
+            <div className="absolute w-44 h-44 sm:w-56 sm:h-56 rounded-full bg-white/25 blur-3xl pointer-events-none" />
 
-          {/* ===================================================== */}
-          {/* THE 3D FLOATING GOLDEN ENGAGEMENT RINGS (Benchmark Centerpiece) */}
-          {/* ===================================================== */}
-          <motion.div
-            style={{
-              y: smoothRingsY,
-              scale: smoothRingsScale,
-              opacity: ringsOpacity,
-            }}
-            className="relative py-4 my-2 flex items-center justify-center"
-          >
-            {/* Concentric Animated Ring Pulses radiating behind rings */}
-            <div className="absolute w-48 h-48 sm:w-64 sm:h-64 rounded-full border border-[#ECC872]/30 animate-ring-pulse pointer-events-none" />
-            <div className="absolute w-64 h-64 sm:w-80 sm:h-80 rounded-full border border-[#D4E5F7]/20 animate-ring-pulse pointer-events-none [animation-delay:1.6s]" />
-            <div className="absolute w-52 h-52 sm:w-64 sm:h-64 rounded-full bg-gradient-to-r from-[#ECC872]/35 via-[#FFF1C5]/45 to-[#ECC872]/35 blur-3xl pointer-events-none" />
-
-            {/* Interactive 3D Tilt Rings Box responding to mouse pointer */}
+            {/* 3D Mouse-Interactive Frosted Crystal Ring Pedestal */}
             <div
               style={{
-                transform: `perspective(1000px) rotateY(${mousePos.x * 14}deg) rotateX(${-mousePos.y * 14}deg)`,
-                transition: 'transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+                transform: `perspective(1000px) rotateY(${pointerTilt.x * 14}deg) rotateX(${-pointerTilt.y * 14}deg)`,
+                transition: 'transform 0.22s cubic-bezier(0.16, 1, 0.3, 1)',
               }}
-              className="relative z-10 w-52 sm:w-64 h-52 sm:h-64 mx-auto rounded-full bg-gradient-to-b from-[#182647]/90 via-[#0E172E]/95 to-[#050811] border-2 border-[#ECC872]/60 shadow-[0_0_50px_rgba(236,200,114,0.35),inset_0_0_30px_rgba(236,200,114,0.18)] flex items-center justify-center p-6 select-none"
+              className="relative z-10 w-44 h-44 sm:w-56 sm:h-56 rounded-full azure-glass-strong flex items-center justify-center p-6 select-none"
             >
+              {/* Delicate rotating dashed orbital ring */}
+              <svg
+                viewBox="0 0 200 200"
+                className="absolute inset-2 w-[calc(100%-16px)] h-[calc(100%-16px)] animate-slow-spin opacity-55 pointer-events-none"
+                aria-hidden="true"
+              >
+                <circle
+                  cx="100"
+                  cy="100"
+                  r="94"
+                  fill="none"
+                  stroke="#FFFFFF"
+                  strokeWidth="1"
+                  strokeDasharray="4 8"
+                />
+              </svg>
+
               <img
                 src="/rings.png"
-                alt="Two golden diamond engagement rings"
-                className="w-full h-auto object-contain animate-float-smooth gold-filter-art scale-110"
+                alt="Interlocking diamond engagement rings"
+                className="w-full h-auto object-contain animate-gentle-float pearl-art-filter scale-110"
               />
-              {/* Twinkling Diamond Flare Sparkles */}
-              <Sparkles className="absolute top-4 right-10 w-6 h-6 text-[#FFF1C5] animate-diamond-glint drop-shadow-[0_0_12px_#FFF1C5]" />
-              <Sparkles className="absolute bottom-6 left-8 w-5 h-5 text-[#ECC872] animate-diamond-glint [animation-delay:1.4s] drop-shadow-[0_0_10px_#ECC872]" />
-            </div>
-          </motion.div>
 
-          <div className="space-y-1.5 pt-1">
-            <span className="text-xs uppercase tracking-widest text-[#ECC872] font-bold block">
-              You Are Cordially Invited
-            </span>
-            <span className="text-xs uppercase tracking-widest text-[#CBD5E1]/80 font-light block">
-              To Celebrate the Engagement of
-            </span>
+              <Sparkles className="absolute top-3 right-6 w-5 h-5 text-white animate-star-glint" />
+              <Sparkles className="absolute bottom-5 left-6 w-4 h-4 text-white animate-star-glint [animation-delay:1.2s]" />
+            </div>
           </div>
 
-          <div className="w-56 h-[1.5px] bg-gradient-to-r from-transparent via-[#ECC872] to-transparent mx-auto my-3" />
-
-          {/* Couple Names Centerpiece */}
-          <div className="space-y-2 py-2">
-            <h1 className="font-serif text-4xl sm:text-6xl md:text-7xl font-normal text-[#F8FAFC] tracking-wide drop-shadow-[0_4px_25px_rgba(0,0,0,0.8)]">
+          {/* Monumental Split-Curtain Editorial Names */}
+          <div className="w-full space-y-1 sm:space-y-2">
+            <h1 className="hero-groom-name font-serif text-5xl sm:text-7xl md:text-[5.5rem] font-normal text-white tracking-tight leading-[1.02] drop-shadow-[0_6px_28px_rgba(9,41,112,0.32)]">
               {eventConfig.groom}
             </h1>
-            <span className="font-serif italic text-2xl sm:text-4xl gold-text-foil block my-1">
-              &
-            </span>
-            <h1 className="font-serif text-4xl sm:text-6xl md:text-7xl font-normal text-[#F8FAFC] tracking-wide drop-shadow-[0_4px_25px_rgba(0,0,0,0.8)]">
+
+            <div className="flex items-center justify-center gap-5 py-1">
+              <span className="h-[1px] w-16 sm:w-28 bg-gradient-to-r from-transparent to-white/75" />
+              <span className="font-serif italic text-3xl sm:text-5xl text-white/95">&amp;</span>
+              <span className="h-[1px] w-16 sm:w-28 bg-gradient-to-l from-transparent to-white/75" />
+            </div>
+
+            <h1 className="hero-bride-name font-serif text-5xl sm:text-7xl md:text-[5.5rem] font-normal text-white tracking-tight leading-[1.02] drop-shadow-[0_6px_28px_rgba(9,41,112,0.32)]">
               {eventConfig.bride}
             </h1>
           </div>
 
-          <div className="w-56 h-[1.5px] bg-gradient-to-r from-transparent via-[#ECC872] to-transparent mx-auto my-3" />
-
-          <p className="text-xs uppercase tracking-widest text-[#CBD5E1] pt-2 font-semibold">
-            {eventConfig.dayDisplay}, {eventConfig.dateDisplay} {eventConfig.yearDisplay} · {eventConfig.timeDisplay} · {eventConfig.venue}
-          </p>
-
-          {/* Animated Scroll Cue */}
-          <div className="pt-8 flex flex-col items-center justify-center text-xs tracking-widest uppercase text-[#94A3B8]">
-            <span className="text-[10px] mb-2 font-semibold text-[#ECC872]">Scroll to Explore Ceremony</span>
-            <ChevronDown className="w-5 h-5 text-[#ECC872] animate-bounce" />
+          {/* Subtle Date & Venue Strip */}
+          <div className="mt-7 inline-flex flex-wrap items-center justify-center gap-x-4 gap-y-1 px-6 py-2.5 rounded-full bg-white/15 backdrop-blur-md border border-white/30 text-xs uppercase tracking-[0.22em] text-white font-semibold">
+            <span>{eventConfig.dayDisplay}, {eventConfig.dateDisplay} {eventConfig.yearDisplay}</span>
+            <span className="hidden sm:inline opacity-60">|</span>
+            <span>{eventConfig.timeDisplay}</span>
+            <span className="hidden sm:inline opacity-60">|</span>
+            <span>{eventConfig.venue}</span>
           </div>
-        </motion.div>
+        </div>
+
+        {/* Scroll Cue + Continuous Kinetic Scroll-Scrubbed Marquee Ribbon */}
+        <div className="w-full space-y-5 pt-4">
+          <button
+            onClick={() => scrollToSection('couple')}
+            className="inline-flex flex-col items-center gap-1.5 text-white/90 hover:text-white transition-colors cursor-pointer"
+          >
+            <span className="text-[10px] uppercase tracking-[0.3em] font-semibold">
+              Scroll to Unfold Story
+            </span>
+            <ChevronDown className="w-5 h-5 animate-bounce" />
+          </button>
+
+          <div className="w-screen -mx-4 sm:-mx-8 border-y border-white/20 py-3 overflow-hidden bg-white/[0.06] backdrop-blur-sm">
+            <div className="kinetic-marquee-track flex whitespace-nowrap gap-10 text-xs uppercase tracking-[0.34em] text-white/85 font-medium select-none">
+              {Array.from({ length: 6 }).map((_, idx) => (
+                <span key={idx} className="inline-flex items-center gap-10">
+                  <span>{eventConfig.groom} &amp; {eventConfig.bride}</span>
+                  <span className="text-white/50">✦</span>
+                  <span>25 December 2026</span>
+                  <span className="text-white/50">✦</span>
+                  <span>The Engagement Ceremony</span>
+                  <span className="text-white/50">✦</span>
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
       </section>
 
-      {/* ========================================================= */}
-      {/* SCENE 02 — THE COUPLE REVEAL & RING HANDS CEREMONY */}
-      {/* ========================================================= */}
+      {/* ================================================================= */}
+      {/* SCENE 02 — SCULPTED CATHEDRAL ARCHES & SCROLL-DRAWN SVG SPINE */}
+      {/* ================================================================= */}
       <section
         id="couple"
-        className="min-h-screen flex flex-col items-center justify-center text-center px-4 sm:px-6 py-24 relative max-w-4xl mx-auto z-10"
+        className="relative min-h-screen flex flex-col items-center justify-center px-4 sm:px-8 py-28 max-w-6xl mx-auto z-10"
       >
-        <motion.div
-          initial={{ opacity: 0, y: 40, scale: 0.97 }}
-          whileInView={{ opacity: 1, y: 0, scale: 1 }}
-          viewport={{ once: true, amount: 0.25 }}
-          transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
-          className="w-full space-y-6"
-        >
-          {/* Hand Ceremony Illustration with Golden Aura Glow */}
-          <div className="relative w-56 sm:w-72 mx-auto mb-4 select-none">
-            <div className="absolute inset-0 bg-[#ECC872]/25 blur-2xl rounded-full pointer-events-none" />
-            <img
-              src="/ring_hands.png"
-              alt="Golden ring placed upon bride's hand"
-              className="relative w-full h-auto object-contain rounded-2xl border border-[#ECC872]/20 gold-filter-art"
-            />
+        {/* Ceremony Hands Emblem with Rotating Calligraphic Crest */}
+        <div className="couple-hands-emblem relative mb-10 flex flex-col items-center text-center">
+          <div className="relative w-52 h-52 sm:w-64 sm:h-64 flex items-center justify-center">
+            <div className="absolute inset-0 rounded-full bg-white/15 blur-2xl pointer-events-none" />
+            <svg
+              viewBox="0 0 240 240"
+              className="absolute inset-0 w-full h-full animate-slow-spin opacity-60 pointer-events-none"
+              aria-hidden="true"
+            >
+              <defs>
+                <path
+                  id="ringCrestPath"
+                  d="M 120, 120 m -98, 0 a 98,98 0 1,1 196,0 a 98,98 0 1,1 -196,0"
+                />
+              </defs>
+              <text fill="#FFFFFF" fontSize="9.5" letterSpacing="6.5" fontWeight="600">
+                <textPath href="#ringCrestPath">
+                  TWO HEARTS · ONE ETERNAL PROMISE · 25 DEC 2026 ·
+                </textPath>
+              </text>
+            </svg>
+            <div className="relative w-40 h-40 sm:w-48 sm:h-48 rounded-full azure-glass flex items-center justify-center p-4">
+              <img
+                src="/ring_hands.png"
+                alt="Ceremony ring placed on hand"
+                className="w-full h-auto object-contain pearl-art-filter"
+              />
+            </div>
           </div>
 
-          <span className="text-[11px] uppercase tracking-ultra text-[#ECC872] font-bold block">
-            Two Families · One Beautiful Beginning
-          </span>
-          <h2 className="font-serif text-3xl sm:text-5xl text-[#F8FAFC] font-medium">
-            The Couple
+          <h2 className="font-serif text-4xl sm:text-6xl text-white font-normal mt-6 tracking-tight">
+            The Happy Couple
           </h2>
-          <p className="font-sans text-xs sm:text-sm text-[#CBD5E1] max-w-lg mx-auto font-light leading-relaxed">
-            With the blessings of Allah and the love of our families, we joyfully invite you to celebrate a beautiful new chapter in our lives.
+          <p className="font-sans text-sm sm:text-base text-white/85 max-w-xl mx-auto mt-3 leading-relaxed font-light">
+            Together with the prayers and blessings of our beloved families, we invite you to witness the joyous beginning of our forever.
           </p>
+        </div>
 
-          {/* Side-by-side Crystal Glass Portrait Frames */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 max-w-2xl mx-auto items-center pt-4">
-            {/* Groom Portrait Frame */}
-            <div className="crystal-card crystal-card-interactive sheen-card relative p-8 sm:p-10 rounded-3xl text-center group">
-              <div className="absolute inset-2 border border-[#ECC872]/20 rounded-2xl pointer-events-none" />
-
-              {/* Arched Portrait Window Placeholder */}
-              <div className="w-32 h-40 sm:w-40 sm:h-48 mx-auto rounded-t-full rounded-b-2xl bg-gradient-to-b from-[#121B33] via-[#0A0F1F] to-[#050811] border-2 border-[#ECC872]/50 flex flex-col items-center justify-center relative overflow-hidden mb-5 shadow-inner">
-                <div className="w-16 h-16 rounded-full border-2 border-[#ECC872]/40 flex items-center justify-center bg-[#0F172A] shadow-md">
-                  <span className="font-serif italic text-2xl text-[#ECC872] font-bold">FA</span>
-                </div>
-                <span className="text-[10px] uppercase tracking-ultra text-[#FFF1C5] mt-3 font-bold">
-                  The Groom
-                </span>
-                <div className="absolute inset-1 rounded-t-full rounded-b-xl border border-[#ECC872]/20 pointer-events-none" />
-              </div>
-
-              <h3 className="font-serif text-2xl sm:text-3xl text-[#F8FAFC] font-medium">
-                {eventConfig.groom}
-              </h3>
-              <p className="font-sans text-xs tracking-wider text-[#CBD5E1] mt-1.5 font-semibold">
-                {eventConfig.groomParents}
-              </p>
+        {/* Asymmetrical Editorial Cathedral Arches + Live Scroll-Drawn Center Spine */}
+        <div className="perspective-1200 relative w-full grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] items-center gap-8 md:gap-10 mt-6">
+          {/* GROOM CATHEDRAL ARCH */}
+          <div className="arch-groom preserve-3d azure-arch sheen-plate rounded-t-[170px] rounded-b-[28px] px-8 pt-14 pb-11 text-center">
+            <div className="w-28 h-28 mx-auto rounded-full bg-white text-[#1558C0] shadow-[0_14px_34px_rgba(9,41,112,0.3)] flex flex-col items-center justify-center border-4 border-white/40 mb-7">
+              <span className="font-serif italic text-3xl font-bold leading-none">FA</span>
+              <span className="text-[8px] uppercase tracking-[0.22em] font-bold mt-1 text-[#1E78F2]">
+                Groom
+              </span>
             </div>
 
-            {/* Bride Portrait Frame */}
-            <div className="crystal-card crystal-card-interactive sheen-card relative p-8 sm:p-10 rounded-3xl text-center group">
-              <div className="absolute inset-2 border border-[#ECC872]/20 rounded-2xl pointer-events-none" />
+            <h3 className="font-serif text-3xl sm:text-4xl text-white font-medium tracking-wide">
+              {eventConfig.groom}
+            </h3>
+            <div className="w-16 h-[1px] bg-white/45 mx-auto my-4" />
+            <p className="font-sans text-xs sm:text-sm uppercase tracking-[0.2em] text-white/90 font-medium">
+              {eventConfig.groomParents}
+            </p>
+          </div>
 
-              {/* Arched Portrait Window Placeholder */}
-              <div className="w-32 h-40 sm:w-40 sm:h-48 mx-auto rounded-t-full rounded-b-2xl bg-gradient-to-b from-[#121B33] via-[#0A0F1F] to-[#050811] border-2 border-[#ECC872]/50 flex flex-col items-center justify-center relative overflow-hidden mb-5 shadow-inner">
-                <div className="w-16 h-16 rounded-full border-2 border-[#ECC872]/40 flex items-center justify-center bg-[#0F172A] shadow-md">
-                  <span className="font-serif italic text-2xl text-[#ECC872] font-bold">AS</span>
-                </div>
-                <span className="text-[10px] uppercase tracking-ultra text-[#FFF1C5] mt-3 font-bold">
-                  The Bride
-                </span>
-                <div className="absolute inset-1 rounded-t-full rounded-b-xl border border-[#ECC872]/20 pointer-events-none" />
-              </div>
-
-              <h3 className="font-serif text-2xl sm:text-3xl text-[#F8FAFC] font-medium">
-                {eventConfig.bride}
-              </h3>
-              <p className="font-sans text-xs tracking-wider text-[#CBD5E1] mt-1.5 font-semibold">
-                {eventConfig.brideParents}
-              </p>
+          {/* LIVE SCROLL-DRAWN VERTICAL SVG TIMELINE SPINE (Desktop) */}
+          <div className="hidden md:flex flex-col items-center justify-center h-[380px] relative">
+            <svg width="48" height="380" viewBox="0 0 48 380" className="overflow-visible" aria-hidden="true">
+              <line
+                x1="24"
+                y1="0"
+                x2="24"
+                y2="380"
+                stroke="rgba(255,255,255,0.22)"
+                strokeWidth="1.5"
+              />
+              <line
+                className="couple-spine-line"
+                x1="24"
+                y1="0"
+                x2="24"
+                y2="380"
+                stroke="#FFFFFF"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+              />
+            </svg>
+            <div className="absolute top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white text-[#1558C0] shadow-[0_0_28px_rgba(255,255,255,0.75)] flex items-center justify-center">
+              <Heart className="w-5 h-5 fill-current" />
             </div>
           </div>
-        </motion.div>
+
+          {/* BRIDE CATHEDRAL ARCH */}
+          <div className="arch-bride preserve-3d azure-arch sheen-plate rounded-t-[170px] rounded-b-[28px] px-8 pt-14 pb-11 text-center md:mt-16">
+            <div className="w-28 h-28 mx-auto rounded-full bg-white text-[#1558C0] shadow-[0_14px_34px_rgba(9,41,112,0.3)] flex flex-col items-center justify-center border-4 border-white/40 mb-7">
+              <span className="font-serif italic text-3xl font-bold leading-none">AS</span>
+              <span className="text-[8px] uppercase tracking-[0.22em] font-bold mt-1 text-[#1E78F2]">
+                Bride
+              </span>
+            </div>
+
+            <h3 className="font-serif text-3xl sm:text-4xl text-white font-medium tracking-wide">
+              {eventConfig.bride}
+            </h3>
+            <div className="w-16 h-[1px] bg-white/45 mx-auto my-4" />
+            <p className="font-sans text-xs sm:text-sm uppercase tracking-[0.2em] text-white/90 font-medium">
+              {eventConfig.brideParents}
+            </p>
+          </div>
+        </div>
       </section>
 
-      {/* ========================================================= */}
-      {/* SCENE 03 — THE SACRED BLESSING */}
-      {/* ========================================================= */}
+      {/* ================================================================= */}
+      {/* SCENE 03 — FULL-BLEED ROTATING MANDALA & SACRED BLESSING SANCTUM */}
+      {/* ================================================================= */}
       <section
         id="blessing"
-        className="min-h-screen flex flex-col items-center justify-center text-center px-4 sm:px-6 py-24 relative max-w-4xl mx-auto z-10"
+        className="relative min-h-screen flex flex-col items-center justify-center text-center px-4 sm:px-8 py-28 overflow-hidden z-10"
       >
-        <motion.div
-          initial={{ opacity: 0, y: 40, scale: 0.97 }}
-          whileInView={{ opacity: 1, y: 0, scale: 1 }}
-          viewport={{ once: true, amount: 0.25 }}
-          transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
-          className="w-full space-y-6"
+        {/* Giant Architectural Rotating 8-Point Islamic Star Mandala (Scroll-Scrubbed) */}
+        <svg
+          viewBox="0 0 600 600"
+          className="blessing-mandala absolute w-[520px] h-[520px] sm:w-[700px] sm:h-[700px] pointer-events-none opacity-[0.16]"
+          aria-hidden="true"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#ECC872]/40 bg-[#0A0F1F]/80 shadow-md mb-2">
-            <Sparkles className="w-3.5 h-3.5 text-[#ECC872]" />
-            <span className="text-[11px] uppercase tracking-ultra text-[#FFF1C5] font-bold">
+          <g transform="translate(300,300)" fill="none" stroke="#FFFFFF" strokeWidth="1.2">
+            <circle r="275" strokeDasharray="3 7" />
+            <circle r="245" />
+            <circle r="195" strokeOpacity="0.65" />
+            <rect x="-175" y="-175" width="350" height="350" />
+            <rect x="-175" y="-175" width="350" height="350" transform="rotate(45)" />
+            <rect x="-135" y="-135" width="270" height="270" transform="rotate(22.5)" strokeOpacity="0.6" />
+            <rect x="-135" y="-135" width="270" height="270" transform="rotate(67.5)" strokeOpacity="0.6" />
+          </g>
+        </svg>
+
+        {/* Full-bleed Open Typography Sanctuary (No Boxy Card!) */}
+        <div className="relative z-10 max-w-4xl mx-auto space-y-8">
+          <div className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full bg-white/15 border border-white/35 backdrop-blur-md">
+            <Sparkles className="w-3.5 h-3.5 text-white" />
+            <span className="text-[11px] uppercase tracking-[0.28em] text-white font-semibold">
               Sacred Blessing
             </span>
           </div>
 
-          <div className="crystal-card sheen-card relative p-8 sm:p-14 rounded-3xl max-w-3xl mx-auto border border-[#ECC872]/35 shadow-[0_25px_70px_-15px_rgba(0,0,0,0.85)]">
-            <div className="absolute inset-3 border border-[#ECC872]/20 rounded-2xl pointer-events-none" />
-
-            <div dir="rtl" className="my-5 relative">
-              <div className="absolute inset-0 bg-[#ECC872]/15 blur-3xl rounded-full pointer-events-none" />
-              <p className="relative font-arabic text-2xl sm:text-4xl md:text-5xl text-[#ECC872] leading-[2.4] sm:leading-[2.5] tracking-wide select-none drop-shadow-[0_2px_15px_rgba(236,200,114,0.4)] pb-2">
-                {eventConfig.duaArabic}
-              </p>
-            </div>
-
-            <div className="w-48 h-[1.5px] bg-gradient-to-r from-transparent via-[#ECC872] to-transparent mx-auto my-6" />
-
-            <p className="font-serif italic text-lg sm:text-2xl text-[#F8FAFC] leading-relaxed max-w-xl mx-auto font-light">
-              "{eventConfig.duaTranslation}"
-            </p>
-            <p className="text-[10px] uppercase tracking-widest text-[#ECC872] mt-5 font-sans font-bold">
-              Sunan Abi Dawud
+          <div dir="rtl" className="blessing-arabic-focus py-2">
+            <p className="font-arabic text-3xl sm:text-5xl md:text-6xl text-white leading-[2.35] sm:leading-[2.45] tracking-wide select-none drop-shadow-[0_6px_28px_rgba(255,255,255,0.35)]">
+              {eventConfig.duaArabic}
             </p>
           </div>
-        </motion.div>
+
+          {/* Self-drawing crisp white horizontal line */}
+          <div className="blessing-rule w-56 sm:w-72 h-[1.5px] bg-gradient-to-r from-transparent via-white to-transparent mx-auto origin-center" />
+
+          <blockquote className="font-serif italic text-2xl sm:text-3xl md:text-4xl text-white/95 leading-relaxed max-w-2xl mx-auto font-light drop-shadow-[0_2px_14px_rgba(9,41,112,0.28)]">
+            &ldquo;{eventConfig.duaTranslation}&rdquo;
+          </blockquote>
+
+          <p className="text-xs uppercase tracking-[0.3em] text-white/80 font-semibold pt-1">
+            Sunan Abi Dawud
+          </p>
+        </div>
       </section>
 
-      {/* ========================================================= */}
-      {/* SCENE 04 — THE DATE REVEAL (Friday, 25 December 2026) */}
-      {/* ========================================================= */}
+      {/* ================================================================= */}
+      {/* SCENE 04 — MONUMENTAL WATERMARK "25" & 3D FLATTENING DATE PLATE */}
+      {/* ================================================================= */}
       <section
         id="date"
-        className="min-h-screen flex flex-col items-center justify-center text-center px-4 sm:px-6 py-24 relative max-w-4xl mx-auto z-10"
+        className="relative min-h-screen flex items-center justify-center px-4 sm:px-8 py-28 overflow-hidden z-10"
       >
-        <motion.div
-          initial={{ opacity: 0, y: 40, scale: 0.96 }}
-          whileInView={{ opacity: 1, y: 0, scale: 1 }}
-          viewport={{ once: true, amount: 0.25 }}
-          transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
-          className="w-full max-w-md mx-auto"
+        {/* Monumental Parallax Typographic Watermark */}
+        <span
+          aria-hidden="true"
+          className="date-watermark absolute font-serif text-[18rem] sm:text-[28rem] md:text-[34rem] leading-none text-white/[0.08] font-bold select-none pointer-events-none"
         >
-          <div className="crystal-card crystal-card-interactive sheen-card relative p-8 sm:p-12 rounded-3xl shadow-[0_25px_70px_-15px_rgba(0,0,0,0.85)] border border-[#ECC872]/35 overflow-hidden text-center">
-            <div className="absolute inset-2 border border-[#ECC872]/20 rounded-2xl pointer-events-none" />
+          25
+        </span>
 
-            {/* Embossed Metallic Wax Seal on Top */}
-            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-[#FFF1C5] via-[#ECC872] to-[#8F6A1E] shadow-[0_8px_25px_rgba(236,200,114,0.4)] flex items-center justify-center border-2 border-[#FFF1C5]">
-              <div className="w-12 h-12 rounded-full border border-[#ECC872]/60 flex flex-col items-center justify-center text-[#F8FAFC] bg-gradient-to-br from-[#0B1226] to-[#050811] shadow-inner">
-                <span className="font-serif italic font-bold text-sm leading-none text-[#ECC872]">FA</span>
-                <span className="text-[7px] uppercase tracking-widest font-bold mt-0.5 text-[#FFF1C5]">2026</span>
+        {/* 3D Perspective Crystal Invitation Plate (Scroll-Scrubbed Flattening) */}
+        <div className="perspective-1200 w-full max-w-3xl mx-auto relative z-10">
+          <div className="date-plate-3d preserve-3d azure-glass-strong sheen-plate rounded-[36px] p-8 sm:p-14">
+            <div className="grid grid-cols-1 md:grid-cols-[1.15fr_auto_1fr] items-center gap-8 md:gap-10">
+              {/* Left Monumental Date Stack */}
+              <div className="text-center md:text-left space-y-2">
+                <div className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.3em] text-white/90 font-semibold">
+                  <Calendar className="w-4 h-4" />
+                  <span>Save The Date</span>
+                </div>
+                <div className="flex items-baseline justify-center md:justify-start gap-4 pt-2">
+                  <span className="font-serif text-7xl sm:text-8xl md:text-9xl text-white font-normal leading-none">
+                    25
+                  </span>
+                  <div className="text-left">
+                    <span className="font-serif text-3xl sm:text-4xl text-white block leading-tight">
+                      December
+                    </span>
+                    <span className="font-serif italic text-2xl sm:text-3xl text-white/90 block">
+                      {eventConfig.yearDisplay}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Architectural Divider */}
+              <div className="hidden md:block w-[1px] h-40 bg-gradient-to-b from-transparent via-white/50 to-transparent" />
+              <div className="md:hidden h-[1px] w-full bg-gradient-to-r from-transparent via-white/45 to-transparent" />
+
+              {/* Right Schedule & Embossed White Seal */}
+              <div className="flex flex-col items-center md:items-start text-center md:text-left space-y-4">
+                <div className="w-16 h-16 rounded-full bg-white text-[#1558C0] shadow-[0_10px_28px_rgba(9,41,112,0.3)] flex flex-col items-center justify-center border-2 border-[#DBEAFE]">
+                  <span className="font-serif italic font-bold text-base leading-none">FA</span>
+                  <span className="text-[7px] uppercase tracking-widest font-bold mt-0.5 text-[#1E78F2]">
+                    2026
+                  </span>
+                </div>
+
+                <div className="space-y-1.5">
+                  <p className="font-serif text-2xl text-white font-medium">
+                    {eventConfig.dayDisplay} Evening
+                  </p>
+                  <p className="inline-flex items-center gap-2 text-sm uppercase tracking-[0.22em] text-white font-bold">
+                    <Clock className="w-4 h-4 text-white/90" />
+                    <span>{eventConfig.timeDisplay}</span>
+                  </p>
+                  <p className="text-[11px] uppercase tracking-[0.18em] text-white/80">
+                    Pakistan Standard Time
+                  </p>
+                </div>
+
+                <div className="pt-2 border-t border-white/25 w-full">
+                  <p className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-white font-semibold">
+                    <MapPin className="w-3.5 h-3.5 shrink-0" />
+                    <span>{eventConfig.venue}, Faisalabad</span>
+                  </p>
+                </div>
               </div>
             </div>
-
-            <span className="text-[11px] uppercase tracking-ultra text-[#ECC872] font-bold block">
-              SAVE THE DATE
-            </span>
-
-            <h3 className="font-serif text-4xl sm:text-6xl text-[#F8FAFC] font-normal my-2 tracking-wide">
-              {eventConfig.dateDisplay}
-            </h3>
-
-            <p className="font-serif italic text-2xl sm:text-3xl gold-text-foil">
-              {eventConfig.yearDisplay}
-            </p>
-
-            <div className="w-40 h-[1.5px] bg-gradient-to-r from-transparent via-[#ECC872] to-transparent mx-auto my-5" />
-
-            <div className="space-y-1.5 text-xs uppercase tracking-widest text-[#CBD5E1]">
-              <p className="font-semibold text-sm text-[#F8FAFC]">{eventConfig.dayDisplay} Evening</p>
-              <p className="gold-text-foil font-bold text-base">{eventConfig.timeDisplay}</p>
-              <p className="text-[10px] text-[#94A3B8] pt-1 font-medium">{eventConfig.timezone} (Pakistan Standard Time)</p>
-              <p className="pt-2 text-xs text-[#F8FAFC] font-serif font-semibold">{eventConfig.venue}</p>
-            </div>
           </div>
-        </motion.div>
+        </div>
       </section>
 
-      {/* ========================================================= */}
-      {/* SCENE 05 — THE CELEBRATION & LIVE COUNTDOWN */}
-      {/* ========================================================= */}
+      {/* ================================================================= */}
+      {/* SCENE 05 — ORBITAL SVG RING CHRONOMETER COUNTDOWN */}
+      {/* ================================================================= */}
       <section
         id="celebration"
-        className="min-h-screen flex flex-col items-center justify-center text-center px-4 sm:px-6 py-24 relative max-w-4xl mx-auto z-10"
+        className="relative min-h-screen flex flex-col items-center justify-center text-center px-4 sm:px-8 py-28 max-w-5xl mx-auto z-10"
       >
-        <motion.div
-          initial={{ opacity: 0, y: 40, scale: 0.97 }}
-          whileInView={{ opacity: 1, y: 0, scale: 1 }}
-          viewport={{ once: true, amount: 0.25 }}
-          transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
-          className="w-full space-y-4"
-        >
-          <span className="text-[11px] uppercase tracking-ultra text-[#ECC872] font-bold block">
-            Ceremony Registry & Live Countdown
-          </span>
-          <h2 className="font-serif text-3xl sm:text-5xl text-[#F8FAFC] font-medium">
-            {eventConfig.event}
+        <div className="space-y-4 mb-12">
+          <h2 className="font-serif text-4xl sm:text-6xl text-white font-normal tracking-tight">
+            Counting Every Moment
           </h2>
-          <p className="font-serif italic text-lg sm:text-xl gold-text-foil mb-4">
-            {eventConfig.groom} & {eventConfig.bride}
+          <p className="font-serif italic text-xl sm:text-2xl text-white/90">
+            {eventConfig.event} of {eventConfig.groom} &amp; {eventConfig.bride}
           </p>
+        </div>
 
-          <div className="w-52 h-[1.5px] bg-gradient-to-r from-transparent via-[#ECC872] to-transparent mx-auto my-4" />
-
-          {/* Modern Crystal Countdown Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-5 max-w-xl mx-auto my-8">
-            {[
-              { label: 'Days', val: timeLeft.days },
-              { label: 'Hours', val: timeLeft.hours },
-              { label: 'Minutes', val: timeLeft.minutes },
-              { label: 'Seconds', val: timeLeft.seconds },
-            ].map(item => (
-              <div
-                key={item.label}
-                className="crystal-card crystal-card-interactive sheen-card p-5 sm:p-6 rounded-2xl border border-[#ECC872]/30 shadow-xl backdrop-blur-xl relative overflow-hidden"
-              >
-                <span className="font-serif text-3xl sm:text-5xl text-[#F8FAFC] font-normal block drop-shadow-[0_2px_10px_rgba(236,200,114,0.3)]">
-                  {String(item.val).padStart(2, '0')}
-                </span>
-                <span className="text-[10px] uppercase tracking-widest text-[#ECC872] font-bold mt-1.5 block">
-                  {item.label}
-                </span>
-                {item.label === 'Seconds' && (
-                  <span className="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-[#ECC872] animate-ping" />
-                )}
-              </div>
-            ))}
+        {/* 4 Circular Orbital Chronometer Dials */}
+        {timeLeft.isPast ? (
+          <div className="azure-glass-strong rounded-full px-10 py-6">
+            <p className="font-serif text-3xl sm:text-4xl text-white">
+              The Celebration Has Begun!
+            </p>
           </div>
+        ) : (
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-10 items-center justify-items-center">
+            <OrbitalDial value={timeLeft.days} max={365} label="Days" />
+            <OrbitalDial value={timeLeft.hours} max={24} label="Hours" />
+            <OrbitalDial value={timeLeft.minutes} max={60} label="Minutes" />
+            <OrbitalDial value={timeLeft.seconds} max={60} label="Seconds" isSeconds />
+          </div>
+        )}
 
-          <p className="text-[11px] uppercase tracking-widest text-[#CBD5E1] mt-4 font-semibold">
-            Target: {eventConfig.dayDisplay}, {eventConfig.dateDisplay} {eventConfig.yearDisplay} at {eventConfig.timeDisplay} ({eventConfig.timezone})
-          </p>
-        </motion.div>
+        <p className="text-xs uppercase tracking-[0.26em] text-white/85 font-semibold mt-12">
+          {eventConfig.dayDisplay}, {eventConfig.dateDisplay} {eventConfig.yearDisplay} · {eventConfig.timeDisplay}
+        </p>
       </section>
 
-      {/* ========================================================= */}
-      {/* SCENE 06 — THE FINAL INVITATION, VENUE & ACTIONS */}
-      {/* ========================================================= */}
+      {/* ================================================================= */}
+      {/* SCENE 06 — SWEEPING HORIZON FINALE & VENUE (CLEAN — NO GPS!) */}
+      {/* ================================================================= */}
       <section
         id="closing"
-        className="min-h-screen flex flex-col items-center justify-center text-center px-4 sm:px-6 py-24 relative max-w-4xl mx-auto z-10"
+        className="relative min-h-screen flex flex-col items-center justify-center text-center px-4 sm:px-8 py-24 max-w-5xl mx-auto z-10"
       >
-        <motion.div
-          initial={{ opacity: 0, y: 40, scale: 0.97 }}
-          whileInView={{ opacity: 1, y: 0, scale: 1 }}
-          viewport={{ once: true, amount: 0.25 }}
-          transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
-          className="w-full space-y-6"
-        >
-          <span className="text-[11px] uppercase tracking-ultra text-[#ECC872] font-bold block">
-            With Love & Gratitude
-          </span>
+        <div className="closing-arch-horizon azure-glass-strong sheen-plate w-full rounded-t-[180px] sm:rounded-t-[260px] rounded-b-[36px] px-6 sm:px-14 pt-20 pb-14 space-y-8">
+          <div className="space-y-4 max-w-2xl mx-auto">
+            <span className="text-xs uppercase tracking-[0.3em] text-white/90 font-semibold block">
+              With Love &amp; Gratitude
+            </span>
 
-          <h2 className="font-serif text-3xl sm:text-5xl text-[#F8FAFC] font-medium">
-            Dear Friends & Family
-          </h2>
+            <h2 className="font-serif text-4xl sm:text-6xl text-white font-normal leading-tight">
+              Dear Friends &amp; Family
+            </h2>
 
-          <p className="font-sans text-xs sm:text-sm text-[#CBD5E1] max-w-lg mx-auto font-light leading-relaxed">
-            Your presence will make our celebration even more special. We would be delighted to have you join us as we begin this beautiful new chapter.
-          </p>
+            <p className="font-sans text-sm sm:text-base text-white/90 leading-relaxed font-light">
+              Your presence will make our celebration truly unforgettable. We would be honored to welcome you as we celebrate this joyous milestone together.
+            </p>
 
-          <p className="font-serif text-2xl sm:text-4xl gold-text-foil italic font-normal py-1">
-            {eventConfig.groom} & {eventConfig.bride}
-          </p>
+            <p className="font-serif italic text-3xl sm:text-4xl text-white pt-2">
+              {eventConfig.groom} &amp; {eventConfig.bride}
+            </p>
+          </div>
 
-          {/* Embedded Verified Location Card */}
-          <div className="crystal-card sheen-card p-6 sm:p-7 rounded-2xl max-w-xl mx-auto text-left flex flex-col sm:flex-row items-center justify-between gap-5 mt-6 border border-[#ECC872]/35 shadow-[0_20px_50px_rgba(0,0,0,0.7)]">
-            <div className="space-y-1.5">
-              <span className="text-[10px] uppercase tracking-widest text-[#ECC872] font-bold block">
-                Venue & Map Pin
-              </span>
-              <p className="font-serif text-lg text-[#F8FAFC] font-medium">{eventConfig.venue}</p>
-              <p className="text-[11px] text-[#CBD5E1]">{eventConfig.venueFullAddress}</p>
-              <p className="text-[10px] font-mono text-[#D4E5F7] font-semibold">
-                GPS: {eventConfig.venueCoordinates.lat}° N, {eventConfig.venueCoordinates.lng}° E
-              </p>
+          {/* Clean Venue Showcase Ribbon — ZERO GPS Coordinates */}
+          <div className="bg-white/15 backdrop-blur-xl border border-white/35 rounded-3xl p-6 sm:p-8 max-w-2xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6 text-center sm:text-left">
+            <div className="flex flex-col sm:flex-row items-center gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-white text-[#1558C0] flex items-center justify-center shrink-0 shadow-md">
+                <MapPin className="w-6 h-6" />
+              </div>
+              <div className="space-y-1">
+                <p className="font-serif text-2xl text-white font-medium leading-tight">
+                  The Cottage Marquee
+                </p>
+                <p className="text-xs sm:text-sm text-white/90 font-light">
+                  Daewoo Road, Faisalabad, Pakistan
+                </p>
+              </div>
             </div>
 
-            <div className="flex items-center gap-2 w-full sm:w-auto">
+            <div className="flex items-center gap-2.5 shrink-0">
               <button
                 onClick={handleCopyAddress}
-                className="px-4 py-2.5 rounded-full bg-white/10 hover:bg-white/20 border border-[#ECC872]/40 text-[10px] uppercase tracking-widest text-[#F8FAFC] transition-colors font-bold shadow-sm cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-white/15 hover:bg-white/25 border border-white/40 text-[11px] uppercase tracking-[0.2em] text-white font-semibold transition-colors cursor-pointer"
               >
-                {copiedAddress ? 'Copied' : 'Copy Address'}
+                {copiedAddress ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                <span>{copiedAddress ? 'Copied' : 'Copy'}</span>
               </button>
               <a
                 href={eventConfig.googleMapsDirectionsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-4 py-2.5 rounded-full bg-gradient-to-r from-[#ECC872] via-[#FFF1C5] to-[#ECC872] text-[#050811] text-[10px] uppercase tracking-widest font-bold shadow-[0_4px_15px_rgba(236,200,114,0.3)] hover:shadow-[0_6px_20px_rgba(236,200,114,0.45)] transition-all inline-flex items-center gap-1.5"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white text-[#1558C0] hover:bg-[#EFF6FF] text-[11px] uppercase tracking-[0.2em] font-bold shadow-[0_8px_22px_rgba(9,41,112,0.28)] transition-all"
               >
-                <Navigation className="w-3 h-3 fill-current" />
+                <Navigation className="w-3.5 h-3.5 fill-current" />
                 <span>Directions</span>
               </a>
             </div>
           </div>
 
-          {/* Action Buttons Suite: Replay, WhatsApp, Share, Add to Calendar */}
-          <div className="flex flex-wrap items-center justify-center gap-3 pt-4">
+          {/* Interactive Action Dock */}
+          <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
             <button
               onClick={onReplay}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-[#ECC872] via-[#FFF1C5] to-[#ECC872] text-[#050811] text-xs uppercase tracking-widest font-bold shadow-[0_4px_15px_rgba(236,200,114,0.3)] hover:shadow-[0_8px_25px_rgba(236,200,114,0.5)] transition-all transform hover:-translate-y-0.5 cursor-pointer"
+              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-white text-[#1558C0] hover:bg-[#EFF6FF] text-xs uppercase tracking-[0.22em] font-bold shadow-[0_12px_28px_rgba(9,41,112,0.3)] transition-all hover:-translate-y-0.5 cursor-pointer"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               <span>Replay Invitation</span>
@@ -607,17 +1001,17 @@ export const CinematicScrollJourney: React.FC<CinematicScrollJourneyProps> = ({ 
               href={whatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-[#25D366]/20 border border-[#25D366]/50 text-xs uppercase tracking-widest text-[#4ade80] font-semibold hover:bg-[#25D366]/30 transition-colors"
+              className="inline-flex items-center gap-2 px-5 py-3.5 rounded-full bg-white/15 hover:bg-white/25 border border-white/40 text-xs uppercase tracking-[0.2em] text-white font-semibold transition-colors"
             >
-              <MessageCircle className="w-3.5 h-3.5 text-[#25D366]" />
+              <MessageCircle className="w-3.5 h-3.5" />
               <span>WhatsApp</span>
             </a>
 
             <button
               onClick={handleShare}
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-white/10 border border-[#ECC872]/40 text-xs uppercase tracking-widest text-[#F8FAFC] font-semibold hover:bg-white/20 transition-colors shadow-sm cursor-pointer"
+              className="inline-flex items-center gap-2 px-5 py-3.5 rounded-full bg-white/15 hover:bg-white/25 border border-white/40 text-xs uppercase tracking-[0.2em] text-white font-semibold transition-colors cursor-pointer"
             >
-              {copiedLink ? <Check className="w-3.5 h-3.5 text-[#ECC872]" /> : <Share2 className="w-3.5 h-3.5 text-[#ECC872]" />}
+              {copiedLink ? <Check className="w-3.5 h-3.5" /> : <Share2 className="w-3.5 h-3.5" />}
               <span>{copiedLink ? 'Link Copied' : 'Share'}</span>
             </button>
 
@@ -625,17 +1019,17 @@ export const CinematicScrollJourney: React.FC<CinematicScrollJourneyProps> = ({ 
               href={googleCalendarUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-white/10 border border-[#ECC872]/40 text-xs uppercase tracking-widest text-[#F8FAFC] font-semibold hover:bg-white/20 transition-colors shadow-sm"
+              className="inline-flex items-center gap-2 px-5 py-3.5 rounded-full bg-white/15 hover:bg-white/25 border border-white/40 text-xs uppercase tracking-[0.2em] text-white font-semibold transition-colors"
             >
-              <CalendarPlus className="w-3.5 h-3.5 text-[#ECC872]" />
+              <CalendarPlus className="w-3.5 h-3.5" />
               <span>Calendar</span>
             </a>
           </div>
 
-          <p className="text-[10px] text-[#94A3B8] pt-4 tracking-wider font-medium">
-            {eventConfig.groom} & {eventConfig.bride} · {eventConfig.dayDisplay}, {eventConfig.dateDisplay} {eventConfig.yearDisplay} · {eventConfig.venue}
+          <p className="text-[11px] uppercase tracking-[0.24em] text-white/75 pt-4 font-medium">
+            {eventConfig.groom} &amp; {eventConfig.bride} · {eventConfig.dayDisplay}, {eventConfig.dateDisplay} {eventConfig.yearDisplay}
           </p>
-        </motion.div>
+        </div>
       </section>
     </div>
   );
