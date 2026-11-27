@@ -8,7 +8,8 @@ interface SparkMote {
   speedY: number;
   speedX: number;
   phase: number;
-  kind: 'orb' | 'sparkle' | 'ring';
+  isGold: boolean;
+  kind: 'orb' | 'sparkle';
 }
 
 export const AzureCanvas: React.FC = () => {
@@ -26,19 +27,20 @@ export const AzureCanvas: React.FC = () => {
     let height = (canvas.height = window.innerHeight);
 
     const buildMotes = (): SparkMote[] => {
-      const count = Math.min(72, Math.max(32, Math.floor((width * height) / 19000)));
+      const count = Math.min(78, Math.max(36, Math.floor((width * height) / 17000)));
       const list: SparkMote[] = [];
       for (let i = 0; i < count; i++) {
-        const roll = Math.random();
-        const kind: SparkMote['kind'] = roll < 0.55 ? 'orb' : roll < 0.88 ? 'sparkle' : 'ring';
+        const isGold = Math.random() < 0.56;
+        const kind: SparkMote['kind'] = Math.random() < 0.72 ? 'orb' : 'sparkle';
         list.push({
           x: Math.random() * width,
           y: Math.random() * height,
-          radius: kind === 'orb' ? 2 + Math.random() * 6 : kind === 'sparkle' ? 2 + Math.random() * 4.5 : 8 + Math.random() * 16,
-          baseAlpha: kind === 'orb' ? 0.14 + Math.random() * 0.24 : kind === 'sparkle' ? 0.35 + Math.random() * 0.5 : 0.08 + Math.random() * 0.12,
-          speedY: -0.18 - Math.random() * 0.35,
-          speedX: (Math.random() - 0.5) * 0.22,
+          radius: kind === 'orb' ? 1.3 + Math.random() * 2.6 : 2 + Math.random() * 3.5,
+          baseAlpha: 0.25 + Math.random() * 0.55,
+          speedY: -0.15 - Math.random() * 0.3,
+          speedX: (Math.random() - 0.5) * 0.2,
           phase: Math.random() * Math.PI * 2,
+          isGold,
           kind,
         });
       }
@@ -58,7 +60,7 @@ export const AzureCanvas: React.FC = () => {
     let scrollVelocity = 0;
     const handleScroll = () => {
       const current = window.scrollY;
-      scrollVelocity = Math.max(-28, Math.min(28, current - lastScrollY));
+      scrollVelocity = Math.max(-24, Math.min(24, current - lastScrollY));
       lastScrollY = current;
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -72,10 +74,10 @@ export const AzureCanvas: React.FC = () => {
     window.addEventListener('mousemove', handlePointer, { passive: true });
 
     let t = 0;
-    const drawFourPointStar = (cx: number, cy: number, r: number, alpha: number) => {
+    const drawFourPointStar = (cx: number, cy: number, r: number, rgb: string, alpha: number) => {
       ctx.save();
       ctx.translate(cx, cy);
-      ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+      ctx.fillStyle = `rgba(${rgb}, ${alpha})`;
       ctx.beginPath();
       ctx.moveTo(0, -r * 1.9);
       ctx.quadraticCurveTo(0, 0, r * 1.9, 0);
@@ -94,26 +96,39 @@ export const AzureCanvas: React.FC = () => {
       }
 
       t += 0.016;
-      scrollVelocity *= 0.9; // Smooth kinetic decay
+      scrollVelocity *= 0.9;
 
       ctx.clearRect(0, 0, width, height);
 
-      // Deep royal blue celestial atmospheric aura bloom
-      const topGlow = ctx.createRadialGradient(
-        width * 0.5,
-        height * 0.14,
+      // Soft twilight slate-blue ambient haze (upper-left)
+      const glow1 = ctx.createRadialGradient(
+        width * 0.22,
+        height * 0.25,
         10,
-        width * 0.5,
-        height * 0.14,
-        width * 0.62
+        width * 0.22,
+        height * 0.25,
+        width * 0.48
       );
-      topGlow.addColorStop(0, 'rgba(37, 99, 235, 0.24)');
-      topGlow.addColorStop(0.5, 'rgba(29, 78, 216, 0.10)');
-      topGlow.addColorStop(1, 'rgba(11, 29, 66, 0)');
-      ctx.fillStyle = topGlow;
+      glow1.addColorStop(0, 'rgba(65, 102, 168, 0.22)');
+      glow1.addColorStop(1, 'rgba(20, 32, 56, 0)');
+      ctx.fillStyle = glow1;
       ctx.fillRect(0, 0, width, height);
 
-      // Subtle interactive white starlight spotlight following pointer
+      // Warm subtle champagne gold candlelight bloom (lower-right)
+      const glow2 = ctx.createRadialGradient(
+        width * 0.8,
+        height * 0.76,
+        10,
+        width * 0.8,
+        height * 0.76,
+        width * 0.44
+      );
+      glow2.addColorStop(0, 'rgba(236, 200, 114, 0.11)');
+      glow2.addColorStop(1, 'rgba(20, 32, 56, 0)');
+      ctx.fillStyle = glow2;
+      ctx.fillRect(0, 0, width, height);
+
+      // Subtle interactive starlight spotlight
       if (!prefersReduced) {
         const cursorGlow = ctx.createRadialGradient(
           pointerX,
@@ -121,46 +136,40 @@ export const AzureCanvas: React.FC = () => {
           0,
           pointerX,
           pointerY,
-          Math.min(width, height) * 0.34
+          Math.min(width, height) * 0.3
         );
-        cursorGlow.addColorStop(0, 'rgba(191, 219, 254, 0.09)');
-        cursorGlow.addColorStop(1, 'rgba(11, 29, 66, 0)');
+        cursorGlow.addColorStop(0, 'rgba(255, 241, 197, 0.06)');
+        cursorGlow.addColorStop(1, 'rgba(20, 32, 56, 0)');
         ctx.fillStyle = cursorGlow;
         ctx.fillRect(0, 0, width, height);
       }
 
-      // Draw drifting crystalline motes with scroll-velocity parallax
       for (let i = 0; i < motes.length; i++) {
         const m = motes[i];
         if (!prefersReduced) {
-          m.x += m.speedX + Math.sin(t + m.phase) * 0.12;
-          m.y += m.speedY - scrollVelocity * (0.12 + m.radius * 0.015);
+          m.x += m.speedX + Math.sin(t + m.phase) * 0.1;
+          m.y += m.speedY - scrollVelocity * (0.1 + m.radius * 0.02);
         }
 
-        if (m.y < -30) m.y = height + 30;
-        if (m.y > height + 30) m.y = -30;
-        if (m.x < -30) m.x = width + 30;
-        if (m.x > width + 30) m.x = -30;
+        if (m.y < -20) m.y = height + 20;
+        if (m.y > height + 20) m.y = -20;
+        if (m.x < -20) m.x = width + 20;
+        if (m.x > width + 20) m.x = -20;
 
-        const twinkle = m.baseAlpha + Math.sin(t * 2.1 + m.phase) * 0.14;
-        const alpha = Math.max(0.05, Math.min(0.95, twinkle));
+        const twinkle = m.baseAlpha + Math.sin(t * 2.2 + m.phase) * 0.2;
+        const alpha = Math.max(0.1, Math.min(0.95, twinkle));
+        const rgb = m.isGold ? '236, 200, 114' : '248, 250, 252';
 
         if (m.kind === 'orb') {
-          const orbGrad = ctx.createRadialGradient(m.x, m.y, 0, m.x, m.y, m.radius * 2.2);
-          orbGrad.addColorStop(0, `rgba(255, 255, 255, ${alpha})`);
-          orbGrad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+          const orbGrad = ctx.createRadialGradient(m.x, m.y, 0, m.x, m.y, m.radius * 2.4);
+          orbGrad.addColorStop(0, `rgba(${rgb}, ${alpha})`);
+          orbGrad.addColorStop(1, `rgba(${rgb}, 0)`);
           ctx.fillStyle = orbGrad;
           ctx.beginPath();
-          ctx.arc(m.x, m.y, m.radius * 2.2, 0, Math.PI * 2);
+          ctx.arc(m.x, m.y, m.radius * 2.4, 0, Math.PI * 2);
           ctx.fill();
-        } else if (m.kind === 'sparkle') {
-          drawFourPointStar(m.x, m.y, m.radius, alpha);
         } else {
-          ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
-          ctx.lineWidth = 1;
-          ctx.beginPath();
-          ctx.arc(m.x, m.y, m.radius, 0, Math.PI * 2);
-          ctx.stroke();
+          drawFourPointStar(m.x, m.y, m.radius, rgb, alpha);
         }
       }
 

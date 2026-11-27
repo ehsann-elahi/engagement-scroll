@@ -4,107 +4,114 @@
 
 @layer base {
   :root {
-    --blue-dark: #0B1D42;
-    --blue-royal-deep: #102857;
-    --blue-prussian: #15346E;
-    --blue-midnight-royal: #071430;
+    --twilight-light: #1E3156;
+    --twilight-mid: #15233E;
+    --twilight-base: #101B31;
+    --gold-bright: #FFF1C5;
+    --gold-champagne: #ECC872;
+    --gold-rich: #C99B3B;
     --white-pure: #FFFFFF;
     --white-pearl: #F8FAFC;
-    --white-ice: #E2E8F0;
-    --glass-bg: rgba(255, 255, 255, 0.08);
-    --glass-border: rgba(255, 255, 255, 0.24);
+    --white-soft: #E2E8F0;
   }
 
   html {
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
-    background-color: #0B1D42;
-    color: #FFFFFF;
+    background-color: #142038;
+    color: #F8FAFC;
   }
 
   body {
-    background: linear-gradient(160deg, #132F66 0%, #0C214A 38%, #0E2656 72%, #071430 100%);
+    background:
+      radial-gradient(circle at 22% 18%, rgba(56, 89, 148, 0.42) 0%, transparent 52%),
+      radial-gradient(circle at 82% 76%, rgba(236, 200, 114, 0.12) 0%, transparent 48%),
+      linear-gradient(160deg, #1B2C4D 0%, #14223C 45%, #182847 75%, #0F1A2F 100%);
     background-attachment: fixed;
-    color: #FFFFFF;
+    color: #F8FAFC;
     font-family: 'Manrope', system-ui, sans-serif;
     min-height: 100vh;
     overflow-x: hidden;
   }
 
-  /* Custom refined dark royal blue & white scrollbar */
+  /* Custom champagne gold & twilight scrollbar */
   ::-webkit-scrollbar {
     width: 7px;
   }
   ::-webkit-scrollbar-track {
-    background: #071430;
+    background: #101B31;
   }
   ::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.55);
+    background: linear-gradient(180deg, #ECC872, #C99B3B);
     border-radius: 9999px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #FFFFFF;
+    background: #FFF1C5;
   }
 }
 
 /* ========================================================= */
-/* LUXURY FROSTED CRYSTAL GLASS SURFACES (DARK ROYAL BLUE) */
+/* TWILIGHT SAPPHIRE & CHAMPAGNE GOLD CRYSTAL GLASS SURFACES */
 /* ========================================================= */
 .azure-glass {
   background: linear-gradient(
     145deg,
-    rgba(255, 255, 255, 0.12) 0%,
-    rgba(255, 255, 255, 0.05) 55%,
-    rgba(255, 255, 255, 0.09) 100%
+    rgba(30, 48, 84, 0.72) 0%,
+    rgba(19, 31, 56, 0.78) 100%
   );
-  border: 1px solid rgba(255, 255, 255, 0.24);
+  border: 1px solid rgba(236, 200, 114, 0.32);
   box-shadow:
-    0 28px 65px -15px rgba(3, 10, 28, 0.62),
-    inset 0 1px 1px rgba(255, 255, 255, 0.28);
-  backdrop-filter: blur(22px);
-  -webkit-backdrop-filter: blur(22px);
+    0 24px 56px -14px rgba(5, 11, 24, 0.55),
+    inset 0 1px 1px rgba(255, 241, 197, 0.14);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 
 .azure-glass-strong {
   background: linear-gradient(
     155deg,
-    rgba(255, 255, 255, 0.14) 0%,
-    rgba(16, 40, 87, 0.55) 100%
+    rgba(34, 54, 94, 0.78) 0%,
+    rgba(20, 33, 60, 0.86) 100%
   );
-  border: 1px solid rgba(255, 255, 255, 0.30);
+  border: 1px solid rgba(236, 200, 114, 0.38);
   box-shadow:
-    0 34px 80px -18px rgba(3, 10, 28, 0.72),
-    inset 0 1px 1px rgba(255, 255, 255, 0.32);
-  backdrop-filter: blur(26px);
-  -webkit-backdrop-filter: blur(26px);
+    0 30px 72px -16px rgba(5, 11, 24, 0.62),
+    inset 0 1px 1px rgba(255, 241, 197, 0.18),
+    0 0 38px -8px rgba(236, 200, 114, 0.10);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
 }
 
 .azure-arch {
   background: linear-gradient(
     180deg,
-    rgba(255, 255, 255, 0.13) 0%,
-    rgba(11, 29, 66, 0.45) 100%
+    rgba(33, 52, 90, 0.76) 0%,
+    rgba(19, 31, 56, 0.84) 100%
   );
-  border: 1px solid rgba(255, 255, 255, 0.26);
+  border: 1px solid rgba(236, 200, 114, 0.34);
   box-shadow:
-    0 30px 70px -16px rgba(3, 10, 28, 0.68),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    0 28px 64px -16px rgba(5, 11, 24, 0.58),
+    inset 0 1px 0 rgba(255, 241, 197, 0.16);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
 }
 
 /* ========================================================= */
-/* PURE WHITE PEARL ARTWORK ILLUMINATION FOR RINGS & HANDS */
+/* CHAMPAGNE GOLD METALLIC TEXT & JEWELRY ARTWORK FILTERS */
 /* ========================================================= */
-.pearl-art-filter {
-  filter: brightness(0) invert(1) drop-shadow(0 0 18px rgba(255, 255, 255, 0.65)) drop-shadow(0 6px 14px rgba(10, 45, 115, 0.35));
+.gold-text-foil {
+  background: linear-gradient(135deg, #FFF3D1 0%, #ECC872 32%, #FFE599 50%, #D4A94A 78%, #ECC872 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  display: inline-block;
 }
 
-.pearl-art-soft {
-  filter: brightness(0) invert(1) drop-shadow(0 0 14px rgba(255, 255, 255, 0.5));
+.gold-art-filter {
+  filter: brightness(0) invert(1) sepia(68%) saturate(380%) hue-rotate(3deg) brightness(106%) drop-shadow(0 0 16px rgba(236, 200, 114, 0.55));
 }
 
 /* ========================================================= */
-/* SPECULAR LIGHT SHEEN ON LUXURY PLATES */
+/* SPECULAR CHAMPAGNE LIGHT SHEEN ON LUXURY PLATES */
 /* ========================================================= */
 .sheen-plate {
   position: relative;
@@ -118,9 +125,9 @@
   background: linear-gradient(
     115deg,
     transparent 38%,
-    rgba(255, 255, 255, 0.14) 47%,
-    rgba(255, 255, 255, 0.28) 50%,
-    rgba(255, 255, 255, 0.14) 53%,
+    rgba(255, 241, 197, 0.08) 47%,
+    rgba(255, 241, 197, 0.18) 50%,
+    rgba(255, 241, 197, 0.08) 53%,
     transparent 62%
   );
   transform: translateX(-60%);
@@ -178,12 +185,12 @@
   }
 }
 
-@keyframes waveShift {
-  0%, 100% {
-    transform: translateX(0);
+@keyframes butterflyFlap {
+  from {
+    transform: scaleX(1);
   }
-  50% {
-    transform: translateX(-3%);
+  to {
+    transform: scaleX(0.28);
   }
 }
 
@@ -203,12 +210,15 @@
   animation: slowSpin 42s linear infinite;
 }
 
-/* Tabular numbers for chronometer stability */
+.animate-wing {
+  transform-origin: 50% 50%;
+  animation: butterflyFlap 0.38s ease-in-out infinite alternate;
+}
+
 .tabular-nums {
   font-variant-numeric: tabular-nums;
 }
 
-/* 3D perspective helpers */
 .perspective-1200 {
   perspective: 1200px;
 }
