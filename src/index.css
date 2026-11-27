@@ -4,122 +4,178 @@
 
 @layer base {
   :root {
-    --paper: #FFFFFF;
-    --paper-soft: #F4F8FC;
-    --royal-navy: #0F1E36;
-    --royal-sapphire: #1B365D;
-    --royal-blue: #2A4D77;
-    --powder-blue: #D6E6F7;
-    --ice-blue: #EBF3FA;
-    --gold: #C6A56B;
-    --gold-foil: #d9b55e;
-    --gold-rich: #8a6a24;
-    --gold-light: #f6e2a0;
+    --bg-deep: #050811;
+    --bg-surface: #0A0F1F;
+    --bg-card: rgba(13, 21, 41, 0.75);
+    --gold-bright: #FFF1C5;
+    --gold-champagne: #ECC872;
+    --gold-foil: #E5BE65;
+    --gold-rich: #C99B3B;
+    --gold-deep: #8F6A1E;
+    --diamond-blue: #D4E5F7;
+    --sapphire-dark: #121F38;
+    --text-primary: #F8FAFC;
+    --text-secondary: #CBD5E1;
+    --text-muted: #94A3B8;
   }
 
   html {
     scroll-behavior: smooth;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    background-color: #050811;
   }
 
   body {
-    background-color: #FFFFFF;
-    color: #0F1E36;
+    background-color: #050811;
+    color: #F8FAFC;
     font-family: 'Manrope', system-ui, sans-serif;
     background:
-      radial-gradient(ellipse at 12% 12%, rgba(190, 220, 252, 0.45), transparent 55%),
-      radial-gradient(ellipse at 88% 88%, rgba(214, 234, 255, 0.55), transparent 55%),
-      #FFFFFF fixed;
+      radial-gradient(circle at 50% 0%, rgba(27, 54, 93, 0.32) 0%, transparent 60%),
+      radial-gradient(circle at 10% 30%, rgba(201, 155, 59, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 90% 70%, rgba(27, 54, 93, 0.25) 0%, transparent 55%),
+      #050811;
     min-height: 100vh;
+    overflow-x: hidden;
   }
 
-  /* Custom subtle scrollbar */
+  /* Custom luxury scrollbar */
   ::-webkit-scrollbar {
     width: 6px;
   }
   ::-webkit-scrollbar-track {
-    background: #F4F8FC;
+    background: #050811;
   }
   ::-webkit-scrollbar-thumb {
-    background: #C6A56B;
+    background: linear-gradient(180deg, #ECC872, #C99B3B);
     border-radius: 9999px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #8a6a24;
+    background: #FFF1C5;
   }
 }
 
-/* Royal Wedding Card */
-.royal-card {
-  background: rgba(255, 255, 255, 0.94);
-  border: 1px solid rgba(201, 162, 74, 0.4);
-  box-shadow: 0 16px 40px -10px rgba(15, 30, 54, 0.08), 0 0 0 1px rgba(255, 255, 255, 0.9) inset;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+/* ========================================================= */
+/* LUXURY CRYSTAL & OBSIDIAN GLASSMORPHISM CARDS */
+/* ========================================================= */
+.crystal-card {
+  background: linear-gradient(165deg, rgba(16, 26, 49, 0.78) 0%, rgba(8, 14, 28, 0.88) 100%);
+  border: 1px solid rgba(236, 200, 114, 0.28);
+  box-shadow:
+    0 24px 60px -15px rgba(0, 0, 0, 0.75),
+    0 0 0 1px rgba(255, 255, 255, 0.06) inset,
+    0 0 35px -5px rgba(236, 200, 114, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 
-/* Gold Foil Text Shimmer */
-.gold-gradient-text {
-  background: linear-gradient(135deg, #8a6a24, #d9b55e 30%, #f6e2a0 50%, #c9a24a 72%, #8a6a24);
+.crystal-card-interactive {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s ease;
+}
+
+.crystal-card-interactive:hover {
+  border-color: rgba(236, 200, 114, 0.55);
+  box-shadow:
+    0 30px 70px -15px rgba(0, 0, 0, 0.85),
+    0 0 0 1px rgba(236, 200, 114, 0.3) inset,
+    0 0 45px rgba(236, 200, 114, 0.16);
+  transform: translateY(-4px);
+}
+
+/* ========================================================= */
+/* GOLD FOIL & CELESTIAL METALLIC GRADIENTS */
+/* ========================================================= */
+.gold-text-foil {
+  background: linear-gradient(135deg, #FFF3D1 0%, #ECC872 32%, #FFE599 48%, #C99B3B 78%, #ECC872 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  display: inline-block;
 }
 
-/* Sapphire Royal Gradient Text */
-.sapphire-gradient-text {
-  background: linear-gradient(135deg, #0F1E36 0%, #1B365D 50%, #2A4D77 100%);
+.gold-text-shimmer {
+  background: linear-gradient(90deg, #ECC872 0%, #FFF3D1 25%, #ECC872 50%, #C99B3B 75%, #ECC872 100%);
+  background-size: 200% auto;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  animation: shineText 6s linear infinite;
 }
 
-/* Concentric Animated Ring Pulses */
+/* Brilliant Gold Foil Filter for line artwork */
+.gold-filter-art {
+  filter: invert(82%) sepia(85%) saturate(850%) hue-rotate(5deg) brightness(115%) contrast(110%) drop-shadow(0 0 16px rgba(236, 200, 114, 0.75));
+}
+
+@keyframes shineText {
+  to {
+    background-position: 200% center;
+  }
+}
+
+/* ========================================================= */
+/* KINETIC ANIMATIONS & RING PULSES */
+/* ========================================================= */
 @keyframes ringPulse {
   0% {
-    transform: scale(0.9);
+    transform: scale(0.85);
     opacity: 0.8;
   }
   50% {
     transform: scale(1.15);
-    opacity: 0.3;
+    opacity: 0.35;
   }
   100% {
-    transform: scale(1.35);
+    transform: scale(1.4);
     opacity: 0;
   }
 }
 
-@keyframes floatRings {
+@keyframes floatSmooth {
   0%, 100% {
     transform: translateY(0px) rotate(0deg);
   }
   50% {
-    transform: translateY(-12px) rotate(2deg);
+    transform: translateY(-14px) rotate(1.5deg);
   }
 }
 
-@keyframes diamondTwinkle {
+@keyframes diamondGlint {
   0%, 100% {
     opacity: 0.2;
     transform: scale(0.6) rotate(0deg);
   }
   50% {
     opacity: 1;
-    transform: scale(1.2) rotate(180deg);
+    transform: scale(1.25) rotate(180deg);
+    filter: drop-shadow(0 0 8px #FFF1C5);
+  }
+}
+
+@keyframes auraBreath {
+  0%, 100% {
+    opacity: 0.35;
+    transform: scale(0.96);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.05);
   }
 }
 
 .animate-ring-pulse {
-  animation: ringPulse 3.5s cubic-bezier(0.2, 0.6, 0.4, 1) infinite;
+  animation: ringPulse 3.8s cubic-bezier(0.16, 1, 0.3, 1) infinite;
 }
 
-.animate-float-rings {
-  animation: floatRings 5s ease-in-out infinite;
+.animate-float-smooth {
+  animation: floatSmooth 6s ease-in-out infinite;
 }
 
-.animate-diamond-twinkle {
-  animation: diamondTwinkle 2.5s ease-in-out infinite;
+.animate-diamond-glint {
+  animation: diamondGlint 2.8s ease-in-out infinite;
+}
+
+.animate-aura-breath {
+  animation: auraBreath 5s ease-in-out infinite;
 }
 
 /* Wing flap animation for butterflies */
@@ -128,97 +184,43 @@
     transform: scaleX(1);
   }
   to {
-    transform: scaleX(0.25);
+    transform: scaleX(0.28);
   }
 }
 
 .animate-wing {
   transform-origin: 50% 50%;
-  animation: butterflyFlap 0.4s ease-in-out infinite alternate;
+  animation: butterflyFlap 0.38s ease-in-out infinite alternate;
 }
 
-/* Luxury Paper Grain Texture */
-.luxury-grain {
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.035'/%3E%3C/svg%3E");
+/* Card Specular Sheen Effect */
+.sheen-card {
+  position: relative;
+  overflow: hidden;
 }
 
-/* Gold Foil Text Shimmer */
-.gold-gradient-text {
-  background: linear-gradient(135deg, #8a6a24, #d9b55e 30%, #f6e2a0 50%, #c9a24a 72%, #8a6a24);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+.sheen-card::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    60deg,
+    transparent 30%,
+    rgba(255, 241, 197, 0.08) 45%,
+    rgba(255, 241, 197, 0.15) 50%,
+    rgba(255, 241, 197, 0.08) 55%,
+    transparent 70%
+  );
+  transform: rotate(25deg) translateY(-100%);
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
 }
 
-.gold-gradient-border {
-  border-image: linear-gradient(135deg, #c9a24a, #f6e2a0, #c9a24a) 1;
-}
-
-/* Luxury Paper Card */
-.royal-card {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.88) 0%, rgba(255, 250, 248, 0.82) 100%);
-  border: 1px solid rgba(201, 162, 74, 0.45);
-  box-shadow: 0 16px 36px -10px rgba(85, 96, 79, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.8) inset;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-}
-
-/* Islamic Floral Filigree Border Accent */
-.ornament-corner {
-  width: 48px;
-  height: 48px;
-  border-color: rgba(198, 165, 107, 0.45);
-}
-
-/* Ambient Bokeh Floating Animations */
-@keyframes floatSlow {
-  0%, 100% {
-    transform: translateY(0px) rotate(0deg);
-  }
-  50% {
-    transform: translateY(-20px) rotate(3deg);
-  }
-}
-
-@keyframes floatReverse {
-  0%, 100% {
-    transform: translateY(0px) rotate(0deg);
-  }
-  50% {
-    transform: translateY(24px) rotate(-4deg);
-  }
-}
-
-@keyframes candleGlow {
-  0%, 100% {
-    opacity: 0.35;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.55;
-    transform: scale(1.06);
-  }
-}
-
-.animate-float-slow {
-  animation: floatSlow 8s ease-in-out infinite;
-}
-
-.animate-float-reverse {
-  animation: floatReverse 10s ease-in-out infinite;
-}
-
-.animate-candle-glow {
-  animation: candleGlow 4s ease-in-out infinite;
-}
-
-/* Hide scrollbar for clean modals and nested views */
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+.sheen-card:hover::after {
+  transform: rotate(25deg) translateY(100%);
 }
 
 @media (prefers-reduced-motion: reduce) {
